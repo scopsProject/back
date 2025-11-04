@@ -1,0 +1,20 @@
+# src/main/resources/application-local.yml
+spring:
+  datasource:
+    # docker-compose.yml에서 환경변수로 주입된 값을 사용합니다.
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update # 로컬에서는 update 또는 create로 설정하여 개발 편의성을 높일 수 있습니다.
+    show-sql: true
+
+# application-prod.yml 에 있는 다른 설정들을 필요에 따라 추가합니다.
+crypto:
+  secret-key: ${CRYPTO_KEY}
+  init-vector: ${CRYPTO_INIT_VECTOR}
+
+jwt:
+  secret-key: ${JWT_SECRET_KEY}
