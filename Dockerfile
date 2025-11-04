@@ -1,5 +1,5 @@
 FROM eclipse-temurin:21-jdk-jammy
-s
+
 WORKDIR /app
 
 COPY build/libs/*-SNAPSHOT.jar app.jar
