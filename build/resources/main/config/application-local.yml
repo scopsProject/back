@@ -12,9 +12,9 @@ spring:
     show-sql: true
 
 # application-prod.yml 에 있는 다른 설정들을 필요에 따라 추가합니다.
-crypto:
-  secret-key: ${CRYPTO_KEY}
-  init-vector: ${CRYPTO_INIT_VECTOR}
-
-jwt:
-  secret-key: ${JWT_SECRET_KEY}
+#crypto:
+#  secret-key: ${CRYPTO_KEY}
+#  init-vector: ${CRYPTO_INIT_VECTOR}
+#
+#jwt:
+#  secret-key: ${JWT_SECRET_KEY}

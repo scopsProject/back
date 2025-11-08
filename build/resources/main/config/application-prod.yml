@@ -1,32 +1,13 @@
 spring:
-  jackson:
-    time-zone: Asia/Seoul
-  mvc:
-    problemdetails:
-      enabled: true
-  jpa:
-    hibernate:
-      ddl-auto: update
-    show-sql: true
-    properties:
-      hibernate:
-        format_sql: true
-  application:
-    name: scops
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}  # 실제 아이디 대신 환경 변수를 사용하세요.
+    password: ${SPRING_DATASOURCE_PASSWORD}  # 실제 비밀번호 대신 환경 변수를 사용하세요.
+    driver-class-name: com.mysql.cj.jdbc.Driver
 
-logging:
-  level:
-    org.hibernate.SQL: debug
-    org.hibernate.type.descriptor.sql.BasicBinder: trace
-
-server:
-  port: 8080
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,info
-  endpoint:
-    health:
-      show-details: when_authorized
+#crypto:
+#  secret-key: ${CRYPTO_KEY}
+#  init-vector: ${CRYPTO_INIT_VECTOR}
+#
+#jwt:
+#  secret-key: ${JWT_SECRET_KEY}
