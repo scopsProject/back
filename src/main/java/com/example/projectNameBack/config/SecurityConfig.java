@@ -27,22 +27,39 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
+                // ⬇️ 이 부분이 corsConfigurationSource() 메서드를 참조합니다.
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-        // 기타 필요한 설정들
-        ;
+
+                // 🚨 여기에 다른 중요한 HTTP 요청 규칙이 더 필요할 수 있습니다. (예: .authorizeHttpRequests)
+                // 지금은 CORS 문제에만 집중했지만,
+                // 회원가입(/scops/userRegister) 경로가 인증 없이 접근 가능해야 합니다.
+                .authorizeHttpRequests(authz -> authz
+                        .requestMatchers("/scops/userRegister", "/api/scops/login").permitAll() // 로그인, 회원가입 경로는 모두 허용
+                        .anyRequest().authenticated() // 나머지 요청은 인증 필요 (예시)
+                );
+
         return http.build();
     }
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:3000"));
+
+        // ⬇️ ‼️ 여기가 수정된 핵심입니다. ‼️
+        // .allowedOrigins() 대신 .allowedOriginPatterns()를 사용합니다.
+        configuration.setAllowedOriginPatterns(List.of(
+                "https://front-a3c.pages.dev",       // 1. 고정 프로덕션 URL
+                "https://*.front-a3c.pages.dev",      // 2. 모든 미리보기 URL
+                "http://localhost:3000"              // 3. 로컬 테스트용
+        ));
+
+        // ⬇️ 나머지 설정은 그대로 유지합니다.
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
+        source.registerCorsConfiguration("/**", configuration); // 모든 경로에 적용
 
         return source;
     }
