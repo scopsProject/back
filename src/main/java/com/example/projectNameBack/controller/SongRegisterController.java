@@ -37,19 +37,19 @@ public class SongRegisterController {
     }
 
     // 이벤트 이름으로 곡 조회
-    @GetMapping("/api/songs/by-event")
+    @GetMapping("/songs/by-event")
     public List<SongRegisterDto> getSongsByEvent(@RequestParam String eventName) {
         return findInfoService.getSongsByEvent(eventName);
     }
 
     // 등록된 이벤트 이름만 가져오기
-    @GetMapping("/api/songs/events")
+    @GetMapping("/songs/events")
     public List<String> getEventNames() {
         return findInfoService.getEventNames();
     }
 
     // 곡 예약
-    @PostMapping("/api/songs/reservation")
+    @PostMapping("/songs/reservation")
     public ResponseEntity<?> reservationSong(@RequestBody ReservationRequestDto requestDto) {
         try {
             findInfoService.reserveSong(requestDto);
@@ -58,7 +58,7 @@ public class SongRegisterController {
             return new ResponseEntity<>("예약 실패", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    @GetMapping("/api/songs/by-week")
+    @GetMapping("/songs/by-week")
     public List<ReservationDto> getSongsByWeek(
             @RequestParam("start") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate start,
             @RequestParam("end") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate end) {
@@ -69,7 +69,7 @@ public class SongRegisterController {
     public List<UserInfoDto> getSessions() {
         return findInfoService.getSessions();
     }
-    @GetMapping("/api/by-month")
+    @GetMapping("/by-month")
     public List<ReservationDto> getMonthlyReservations(@RequestParam String start, @RequestParam String end){
         LocalDate startDate = LocalDate.parse(start);
         LocalDate endDate = LocalDate.parse(end);
