@@ -2,19 +2,21 @@ package com.example.projectNameBack.controller;
 
 import com.example.projectNameBack.dto.LoginResponseDto;
 import com.example.projectNameBack.dto.SaveUserLoginInfoDto;
-// ... (다른 import)
+import com.example.projectNameBack.dto.SongRegisterDto;
+import com.example.projectNameBack.dto.UserInfoDto;
+import com.example.projectNameBack.entity.User;
 import com.example.projectNameBack.repository.UserLoginInfoRepository;
 import com.example.projectNameBack.service.AuthService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import com.example.projectNameBack.util.JwtUtil; // ⬅️ JwtUtil 임포트
-
-// ⬇️ ‼️ (중요) 인증된 사용자 정보를 가져오기 위한 import ‼️
+import com.example.projectNameBack.util.JwtUtil;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-
 import java.util.Map;
-
+import java.util.Optional;
+import com.example.projectNameBack.util.JwtUtil; // ⬅️ JwtUtil 임포트
 
 @RestController
 public class FirstController {
@@ -33,25 +35,29 @@ public class FirstController {
         this.jwtUtil = jwtUtil; // ⬅️ 초기화
     }
 
-    // (로그인, 회원가입 메서드는 수정할 필요 없음 - public)
     @PostMapping("/scops/login")
     public ResponseEntity<?> login(@RequestBody Map<String, String> loginData){
-        // ... (기존 코드)
+        String userID = loginData.get("userID");
+        String password = loginData.get("password");
+
+        LoginResponseDto response = authService.login(userID, password);
+
+        if(response != null){
+            return ResponseEntity.ok(response); // 로그인 성공: 사용자 정보 반환
+        } else {
+            return ResponseEntity.status(401).body("로그인 실패");
+        }
     }
 
     @PostMapping("/scops/userRegister")
     public ResponseEntity<Boolean> userRegister(@RequestBody SaveUserLoginInfoDto dto){
-        // ... (기존 코드)
+        try {
+            User saved = authService.saveUserInfo(dto);
+            return ResponseEntity.ok(true);
+        } catch (Exception e) {
+            return ResponseEntity.ok(false);
+        }
     }
-
-    /*
-     * ⬇️ ‼️ 3. (수정됨) deleteUser 메서드 ‼️
-     * JwtAuthenticationFilter가 이미 토큰 검증을 완료했기 때문에,
-     * 컨트롤러는 @AuthenticationPrincipal을 사용해 "현재 인증된 사용자"의
-     * 정보(UserDetails)를 바로 받아올 수 있습니다.
-     *
-     * 굳이 헤더에서 토큰을 다시 파싱할 필요가 없습니다.
-     */
     @DeleteMapping("/scops/deleteUser")
     public ResponseEntity<?> deleteUser(@AuthenticationPrincipal UserDetails userDetails) {
         try {
