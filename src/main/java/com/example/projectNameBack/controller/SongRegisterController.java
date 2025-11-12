@@ -26,7 +26,7 @@ public class SongRegisterController {
         this.findInfoService = findInfoService;
     }
 
-    @PostMapping
+    @PostMapping("/songs")
     public ResponseEntity<?> registerSong(@RequestBody SongRegisterDto dto) {
         try {
             SongRegister saved = songRegisterService.saveSongRegister(dto);
@@ -69,7 +69,7 @@ public class SongRegisterController {
     public List<UserInfoDto> getSessions() {
         return findInfoService.getSessions();
     }
-    @GetMapping("/by-month")
+    @GetMapping("/songs/by-month")
     public List<ReservationDto> getMonthlyReservations(@RequestParam String start, @RequestParam String end){
         LocalDate startDate = LocalDate.parse(start);
         LocalDate endDate = LocalDate.parse(end);
