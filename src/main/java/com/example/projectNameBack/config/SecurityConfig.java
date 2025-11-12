@@ -1,23 +1,29 @@
 package com.example.projectNameBack.config;
 
+// ⬇️ 필요한 import 문 추가
+import com.example.projectNameBack.config.JwtAuthenticationFilter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy; // ‼️ import 추가
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.security.config.Customizer;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter; // ‼️ import 추가
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.cors.CorsConfigurationSource;
-
 import java.util.List;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
+
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -26,17 +32,20 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable())
-                // ⬇️ 이 부분이 corsConfigurationSource() 메서드를 참조합니다.
+                .csrf(csrf -> csrf.disable()) // ⬅️ CSRF 끄기
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
 
-                // 🚨 여기에 다른 중요한 HTTP 요청 규칙이 더 필요할 수 있습니다. (예: .authorizeHttpRequests)
-                // 지금은 CORS 문제에만 집중했지만,
-                // 회원가입(/scops/userRegister) 경로가 인증 없이 접근 가능해야 합니다.
+                // ⬇️ ‼️ JWT 사용을 위한 Stateless(무상태) 설정 ‼️
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("/scops/userRegister", "/scops/login").permitAll() // 로그인, 회원가입 경로는 모두 허용
-                        .anyRequest().authenticated() // 나머지 요청은 인증 필요 (예시)
-                );
+                        // ⬇️ ‼️ 로그인, 회원가입은 'permitAll' ‼️
+                        .requestMatchers("/scops/userRegister", "/api/scops/login", "/scops/login").permitAll()
+                        .anyRequest().authenticated() // ⬅️ 나머지 모든 요청은 '인증' 필요
+                )
+
+                // ⬇️ ‼️ JWT 필터를 Security 필터 체인에 추가 ‼️
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
@@ -45,22 +54,20 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        // ⬇️ ‼️ 여기가 수정된 핵심입니다. ‼️
-        // .allowedOrigins() 대신 .allowedOriginPatterns()를 사용합니다.
+        // ⬇️ ‼️ 'https://' 주소로 CORS 허용 ‼️
         configuration.setAllowedOriginPatterns(List.of(
-                "https://front-a3c.pages.dev",       // 1. 고정 프로덕션 URL
-                "https://*.front-a3c.pages.dev",      // 2. 모든 미리보기 URL
-                "http://localhost:3000",              // 3. 로컬 테스트용
-                "https://scopsband.mooo.com"
+                "https://front-a3c.pages.dev",
+                "https://*.front-a3c.pages.dev",
+                "http://localhost:3000",
+                "https://scopsband.mooo.com" // ⬅️ Nginx https 주소
         ));
 
-        // ⬇️ 나머지 설정은 그대로 유지합니다.
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration); // 모든 경로에 적용
+        source.registerCorsConfiguration("/**", configuration);
 
         return source;
     }
