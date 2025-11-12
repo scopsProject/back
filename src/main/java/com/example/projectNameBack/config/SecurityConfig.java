@@ -50,7 +50,8 @@ public class SecurityConfig {
         configuration.setAllowedOriginPatterns(List.of(
                 "https://front-a3c.pages.dev",       // 1. 고정 프로덕션 URL
                 "https://*.front-a3c.pages.dev",      // 2. 모든 미리보기 URL
-                "http://localhost:3000"              // 3. 로컬 테스트용
+                "http://localhost:3000",              // 3. 로컬 테스트용
+                "https://scopsband.mooo.com:8080"
         ));
 
         // ⬇️ 나머지 설정은 그대로 유지합니다.
