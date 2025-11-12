@@ -3,6 +3,7 @@ package com.example.projectNameBack.controller;
 import com.example.projectNameBack.dto.LoginResponseDto;
 import com.example.projectNameBack.dto.SaveUserLoginInfoDto;
 // ... (다른 import)
+import com.example.projectNameBack.repository.UserLoginInfoRepository;
 import com.example.projectNameBack.service.AuthService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
