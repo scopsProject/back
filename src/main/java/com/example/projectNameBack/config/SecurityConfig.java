@@ -34,7 +34,7 @@ public class SecurityConfig {
                 // 지금은 CORS 문제에만 집중했지만,
                 // 회원가입(/scops/userRegister) 경로가 인증 없이 접근 가능해야 합니다.
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("/scops/userRegister", "/api/scops/login").permitAll() // 로그인, 회원가입 경로는 모두 허용
+                        .requestMatchers("/scops/userRegister", "/scops/login").permitAll() // 로그인, 회원가입 경로는 모두 허용
                         .anyRequest().authenticated() // 나머지 요청은 인증 필요 (예시)
                 );
 
