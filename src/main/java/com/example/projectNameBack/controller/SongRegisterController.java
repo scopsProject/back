@@ -54,10 +54,15 @@ public class SongRegisterController {
         try {
             findInfoService.reserveSong(requestDto);
             return ResponseEntity.ok("예약이 완료되었습니다.");
+        } catch (IllegalStateException e) {
+            // 🔥 시간 겹침 등 논리적 예약 실패 → 409 반환
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
         } catch (Exception e) {
-            return new ResponseEntity<>("예약 실패", HttpStatus.INTERNAL_SERVER_ERROR);
+            // 🔥 서버 내부 문제
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("예약 실패: " + e.getMessage());
         }
     }
+
     @GetMapping("/songs/by-week")
     public List<ReservationDto> getSongsByWeek(
             @RequestParam("start") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate start,

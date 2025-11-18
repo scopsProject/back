@@ -27,7 +27,14 @@ public class Reservation {
     private LocalTime startTime;
     private LocalTime endTime;
 
+    // 예약 사용자
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    // SongRegister (필수 아니면 optional)
     @ManyToOne
     @JoinColumn(name = "song_register_id")
     private SongRegister songRegister;
 }
+

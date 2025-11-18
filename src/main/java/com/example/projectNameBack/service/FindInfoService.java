@@ -7,6 +7,7 @@ import com.example.projectNameBack.repository.ReservationRepository;
 import com.example.projectNameBack.repository.SongRegisterRepository;
 import com.example.projectNameBack.repository.UserLoginInfoRepository;
 import org.springframework.stereotype.Service;
+import jakarta.transaction.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -79,32 +80,6 @@ public class FindInfoService {
     public List<SongRegister> findSingerNameBySongName(String songName) {
         return songRegisterRepository.findBySongName(songName);
     }
-    public void reserveSong(ReservationRequestDto dto) {
-        System.out.println("=== 예약 요청 DTO 확인 ===");
-        System.out.println("eventName = " + dto.getEventName());
-        System.out.println("singer = " + dto.getSingerName());
-        System.out.println("title = " + dto.getSongName());
-        System.out.println("date = " + dto.getDate());
-        System.out.println("startTime = " + dto.getStartTime());
-        System.out.println("endTime = " + dto.getEndTime());
-        System.out.println("songRegisterId = " + dto.getSongRegisterId());
-
-        Reservation reservation = new Reservation();
-        reservation.setEventName(dto.getEventName());
-        reservation.setSingerName(dto.getSingerName());
-        reservation.setSongName(dto.getSongName());
-        reservation.setDate(dto.getDate());          // 날짜는 date 필드에 설정
-        reservation.setStartTime(dto.getStartTime().withSecond(0).withNano(0));
-        reservation.setEndTime(dto.getEndTime().withSecond(0).withNano(0));
-
-        if (dto.getSongRegisterId() != null) {
-            // SongRegister 엔티티를 DB에서 조회해서 연결
-            SongRegister songRegister = songRegisterRepository.findById(dto.getSongRegisterId())
-                    .orElseThrow(() -> new RuntimeException("곡 등록 정보가 없습니다. id: " + dto.getSongRegisterId()));
-            reservation.setSongRegister(songRegister);
-        }
-        reservationRepository.save(reservation);
-    }
 
     public List<UserInfoDto> getSessions() {
         return userLoginInfoRepository.findAllUsers()
@@ -118,4 +93,52 @@ public class FindInfoService {
                 .map(ReservationDto::fromEntity)
                 .collect(Collectors.toList());
     }
+    @Transactional
+    public void reserveSong(ReservationRequestDto dto) {
+
+        System.out.println("=== 예약 요청 DTO 확인 ===");
+        System.out.println("eventName = " + dto.getEventName());
+        System.out.println("singer = " + dto.getSingerName());
+        System.out.println("title = " + dto.getSongName());
+        System.out.println("date = " + dto.getDate());
+        System.out.println("startTime = " + dto.getStartTime());
+        System.out.println("endTime = " + dto.getEndTime());
+        System.out.println("songRegisterId = " + dto.getSongRegisterId());
+
+
+        /* 🔥 1. 동시 예약 방지 - DB 락 걸린 상태로 중복 조회 */
+        List<Reservation> overlapped = reservationRepository.findOverlappingReservations(
+                dto.getDate(),
+                dto.getStartTime(),
+                dto.getEndTime()
+        );
+
+        if (!overlapped.isEmpty()) {
+            throw new IllegalStateException(
+                    "이미 예약된 시간대입니다. (" +
+                            dto.getStartTime() + " ~ " + dto.getEndTime() + ")"
+            );
+        }
+
+
+        /* 🔥 2. 예약 생성 */
+        Reservation reservation = new Reservation();
+        reservation.setEventName(dto.getEventName());
+        reservation.setSingerName(dto.getSingerName());
+        reservation.setSongName(dto.getSongName());
+        reservation.setDate(dto.getDate());
+        reservation.setStartTime(dto.getStartTime().withSecond(0).withNano(0));
+        reservation.setEndTime(dto.getEndTime().withSecond(0).withNano(0));
+
+        if (dto.getSongRegisterId() != null) {
+            SongRegister songRegister = songRegisterRepository.findById(dto.getSongRegisterId())
+                    .orElseThrow(() -> new RuntimeException("곡 등록 정보가 없습니다. id: " + dto.getSongRegisterId()));
+            reservation.setSongRegister(songRegister);
+        }
+
+
+        /* 🔥 3. DB 저장 */
+        reservationRepository.save(reservation);
+    }
+
 }

@@ -1,13 +1,10 @@
 package com.example.projectNameBack.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -15,20 +12,23 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(unique = true)
     private String userID; // 로그인 ID
+
     private String userPassword;
     private String userName;
     private String session;
     private String role;
     private int userYear;
 
-    @ManyToMany(mappedBy = "participants")
-    private Set<SongRegister> reservations = new HashSet<>();
+    // 🔥 유저는 여러 예약을 가질 수 있음 (1:N)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Reservation> reservations = new ArrayList<>();
 
     public User(String userName, int userYear, String session, String userID, String userPassword, String role) {
         this.userName = userName;
