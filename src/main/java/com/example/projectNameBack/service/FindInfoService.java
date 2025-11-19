@@ -1,5 +1,6 @@
 package com.example.projectNameBack.service;
 
+import com.example.projectNameBack.controller.SseController;
 import com.example.projectNameBack.dto.*;
 import com.example.projectNameBack.entity.Reservation;
 import com.example.projectNameBack.entity.SongRegister;
@@ -18,11 +19,13 @@ public class FindInfoService {
     private final SongRegisterRepository songRegisterRepository;
     private final ReservationRepository reservationRepository;
     private final UserLoginInfoRepository userLoginInfoRepository;
+    private final SseController sseController;
 
-    public FindInfoService(SongRegisterRepository songRegisterRepository, ReservationRepository reservationRepository, UserLoginInfoRepository userLoginInfoRepository) {
+    public FindInfoService(SongRegisterRepository songRegisterRepository, ReservationRepository reservationRepository, UserLoginInfoRepository userLoginInfoRepository, SseController sseController) {
         this.songRegisterRepository = songRegisterRepository;
         this.reservationRepository = reservationRepository;
         this.userLoginInfoRepository = userLoginInfoRepository;
+        this.sseController = sseController;
     }
 
     public List<SongRegisterDto> getSongsByEvent(String eventName) {
@@ -139,6 +142,8 @@ public class FindInfoService {
 
         /* 🔥 3. DB 저장 */
         reservationRepository.save(reservation);
+
+        sseController.broadcastNewReservation(dto);
     }
 
 }
