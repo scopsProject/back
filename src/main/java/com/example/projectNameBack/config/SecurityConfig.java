@@ -40,7 +40,7 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(authz -> authz
                         // ⬇️ ‼️ 로그인, 회원가입은 'permitAll' ‼️
-                        .requestMatchers("/scops/userRegister", "/api/scops/login", "/scops/login").permitAll()
+                        .requestMatchers("/scops/userRegister", "/api/scops/login", "/scops/login", "/sse/subscribe", "/songs/**").permitAll()
                         .anyRequest().authenticated() // ⬅️ 나머지 모든 요청은 '인증' 필요
                 )
 
