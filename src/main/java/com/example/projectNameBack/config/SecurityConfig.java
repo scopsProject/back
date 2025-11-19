@@ -1,7 +1,5 @@
 package com.example.projectNameBack.config;
 
-// ⬇️ 필요한 import 문 추가
-import com.example.projectNameBack.config.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
