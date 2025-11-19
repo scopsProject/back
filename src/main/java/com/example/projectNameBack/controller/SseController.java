@@ -1,6 +1,7 @@
 package com.example.projectNameBack.controller;
 
 import com.example.projectNameBack.dto.ReservationRequestDto;
+import com.example.projectNameBack.service.SseService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -11,7 +12,12 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 @RestController
 public class SseController {
+    private final SseService sseService;
 
+    // 생성자 주입
+    public SseController(SseService sseService) {
+        this.sseService = sseService;
+    }
     // 연결된 모든 클라이언트(브라우저)의 명단을 저장할 리스트 (Thread-Safe)
     private final List<SseEmitter> emitters = new CopyOnWriteArrayList<>();
 
@@ -38,22 +44,5 @@ public class SseController {
         }
 
         return emitter;
-    }
-
-    /**
-     * 서비스 로직에서 예약 성공 시 이 메서드를 호출하여 모든 사람에게 알림을 보냄
-     */
-    public void broadcastNewReservation(ReservationRequestDto dto) {
-        for (SseEmitter emitter : emitters) {
-            try {
-                // 클라이언트에게 보낼 데이터: 날짜, 시작시간, 종료시간
-                // 프론트엔드에서 이 정보를 받아 해당 버튼을 비활성화함
-                emitter.send(SseEmitter.event()
-                        .name("new-reservation")
-                        .data(dto));
-            } catch (IOException e) {
-                emitters.remove(emitter);
-            }
-        }
     }
 }

@@ -19,13 +19,13 @@ public class FindInfoService {
     private final SongRegisterRepository songRegisterRepository;
     private final ReservationRepository reservationRepository;
     private final UserLoginInfoRepository userLoginInfoRepository;
-    private final SseController sseController;
+    private final SseService sseService;
 
-    public FindInfoService(SongRegisterRepository songRegisterRepository, ReservationRepository reservationRepository, UserLoginInfoRepository userLoginInfoRepository, SseController sseController) {
+    public FindInfoService(SongRegisterRepository songRegisterRepository, ReservationRepository reservationRepository, UserLoginInfoRepository userLoginInfoRepository, SseController sseController, SseService sseService) {
         this.songRegisterRepository = songRegisterRepository;
         this.reservationRepository = reservationRepository;
         this.userLoginInfoRepository = userLoginInfoRepository;
-        this.sseController = sseController;
+        this.sseService = sseService;
     }
 
     public List<SongRegisterDto> getSongsByEvent(String eventName) {
@@ -143,7 +143,7 @@ public class FindInfoService {
         /* 🔥 3. DB 저장 */
         reservationRepository.save(reservation);
 
-        sseController.broadcastNewReservation(dto);
+        sseService.broadcast(dto);
     }
 
 }
