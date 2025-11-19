@@ -21,7 +21,7 @@ public class FindInfoService {
     private final UserLoginInfoRepository userLoginInfoRepository;
     private final SseService sseService;
 
-    public FindInfoService(SongRegisterRepository songRegisterRepository, ReservationRepository reservationRepository, UserLoginInfoRepository userLoginInfoRepository, SseController sseController, SseService sseService) {
+    public FindInfoService(SongRegisterRepository songRegisterRepository, ReservationRepository reservationRepository, UserLoginInfoRepository userLoginInfoRepository, SseService sseService) {
         this.songRegisterRepository = songRegisterRepository;
         this.reservationRepository = reservationRepository;
         this.userLoginInfoRepository = userLoginInfoRepository;
