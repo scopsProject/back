@@ -34,6 +34,10 @@ public class FirstController {
         this.userLoginInfoRepository = userLoginInfoRepository;
         this.jwtUtil = jwtUtil; // ⬅️ 초기화
     }
+    @GetMapping("/")
+    public String redirectToLogin() {
+        return "redirect:/scops/login";
+    }
 
     @PostMapping("/scops/login")
     public ResponseEntity<?> login(@RequestBody Map<String, String> loginData){
