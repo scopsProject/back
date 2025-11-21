@@ -14,7 +14,7 @@ public class SongSession {
     private String sessionType;   // 예: V, G, D
     private String playerName;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "song_register_id")
     private SongRegister songRegister;
 }

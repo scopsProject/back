@@ -8,6 +8,8 @@ import com.example.projectNameBack.repository.SongRegisterRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class SongRegisterService {
 
@@ -24,16 +26,25 @@ public class SongRegisterService {
         songRegister.setSongName(dto.getSongName());
         songRegister.setSingerName(dto.getSingerName());
         songRegister.setUserName(dto.getUserName());
+        songRegister.setDate(dto.getDate());
 
         // 세션 엔티티 리스트 만들기
-        for (SongSessionDto sessionDto : dto.getSessions()) {
-            SongSession session = new SongSession();
-            session.setSessionType(sessionDto.getSessionType());
-            session.setPlayerName(sessionDto.getPlayerName());
-            session.setSongRegister(songRegister);  // 연관관계 설정
+        // 세션 리스트가 null일 경우 대비
+        List<SongSessionDto> sessions = dto.getSessions();
+        if (sessions != null && !sessions.isEmpty()) {
 
-            songRegister.getSessions().add(session);
+            sessions.forEach(s -> {
+                SongSession session = new SongSession();
+                session.setPlayerName(s.getPlayerName());
+                session.setSessionType(s.getSessionType());
+
+                // 연관관계 설정
+                session.setSongRegister(songRegister);
+                songRegister.getSessions().add(session);
+            });
+
         }
+
 
         return songRegisterRepository.save(songRegister);
     }
