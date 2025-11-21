@@ -75,9 +75,36 @@ public class SongRegisterController {
         return findInfoService.getSessions();
     }
     @GetMapping("/songs/by-month")
-    public List<ReservationDto> getMonthlyReservations(@RequestParam String start, @RequestParam String end){
+    public List<ReservationDto> getMonthlyReservations(@RequestParam String start, @RequestParam String end) {
         LocalDate startDate = LocalDate.parse(start);
         LocalDate endDate = LocalDate.parse(end);
         return findInfoService.getReservationsForMonth(startDate, endDate);
+    }
+    @PutMapping("/songs/update/{id}")
+    public ResponseEntity<?> updateSong(
+            @PathVariable Long id,
+            @RequestBody SongRegisterDto dto
+    ) {
+        try {
+            songRegisterService.updateSong(id, dto);
+            return ResponseEntity.ok("곡 정보가 수정되었습니다.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("수정 실패: " + e.getMessage());
+        }
+    }
+
+    /* -------------------------------------------------------
+     * 6. 곡 삭제
+     * ------------------------------------------------------- */
+    @DeleteMapping("/songs/delete/{id}")
+    public ResponseEntity<?> deleteSong(@PathVariable Long id) {
+        try {
+            songRegisterService.deleteSong(id);
+            return ResponseEntity.ok("곡이 삭제되었습니다.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("삭제 실패: " + e.getMessage());
+        }
     }
 }

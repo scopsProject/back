@@ -1,19 +1,12 @@
 package com.example.projectNameBack.service;
 
-import com.example.projectNameBack.dto.ReservationRequestDto;
 import com.example.projectNameBack.dto.SongRegisterDto;
 import com.example.projectNameBack.dto.SongSessionDto;
-import com.example.projectNameBack.entity.Reservation;
 import com.example.projectNameBack.entity.SongRegister;
 import com.example.projectNameBack.entity.SongSession;
-import com.example.projectNameBack.repository.ReservationRepository;
 import com.example.projectNameBack.repository.SongRegisterRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalTime;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class SongRegisterService {
@@ -43,6 +36,42 @@ public class SongRegisterService {
         }
 
         return songRegisterRepository.save(songRegister);
+    }
+    @Transactional
+    public void deleteSong(Long id) {
+        SongRegister songRegister = songRegisterRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 노래 신청을 찾을 수 없습니다. id=" + id));
+
+        songRegisterRepository.delete(songRegister);
+    }
+    @Transactional
+    public void updateSong(Long id, SongRegisterDto dto) {
+
+        // 1) 기존 데이터 조회
+        SongRegister songRegister = songRegisterRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 노래 신청을 찾을 수 없습니다. id=" + id));
+
+        // 2) 메인 필드 업데이트
+        songRegister.setEventName(dto.getEventName());
+        songRegister.setSongName(dto.getSongName());
+        songRegister.setSingerName(dto.getSingerName());
+        songRegister.setUserName(dto.getUserName());
+
+        // 3) 기존 세션 모두 삭제
+        songRegister.getSessions().clear();
+
+        // 4) 새로운 세션 추가
+        dto.getSessions().forEach(sessionDto -> {
+            SongSession session = new SongSession();
+            session.setSessionType(sessionDto.getSessionType());
+            session.setPlayerName(sessionDto.getPlayerName());
+            session.setSongRegister(songRegister);
+
+            songRegister.getSessions().add(session);
+        });
+
+        // 5) 저장 후 반환
+        songRegisterRepository.save(songRegister);
     }
 
 }
