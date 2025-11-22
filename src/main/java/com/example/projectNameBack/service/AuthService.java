@@ -31,26 +31,36 @@ public class AuthService {
 
     public LoginResponseDto login(String userID, String rawPassword){
         Optional<User> userOpt = userLoginInfoRepository.findByUserID(userID);
-        if(userOpt.isPresent()){
+
+        if (userOpt.isPresent()) {
             User user = userOpt.get();
             System.out.println("DB PW: " + user.getUserPassword());
             System.out.println("입력 PW: " + rawPassword);
-            if(passwordEncoder.matches(rawPassword, user.getUserPassword())){
 
-                // 3. ⬇️ 클래스 이름(JwtUtil)이 아닌, 주입받은 객체(jwtUtil)로 메서드를 호출합니다.
-                String token = jwtUtil.generateToken(user.getUserID());
+            if (passwordEncoder.matches(rawPassword, user.getUserPassword())) {
 
+                // JWT 생성 (userId, userName, role 포함)
+                String token = jwtUtil.generateToken(
+                        user.getUserID(),
+                        user.getUserName(),
+                        user.getRole()
+                );
+
+                // 프론트에 내려줄 사용자 정보 DTO
                 UserInfoDto userInfo = new UserInfoDto(
                         user.getUserName(),
                         user.getSession(),
                         user.getUserYear()
                 );
+
                 System.out.println("로그인 성공: " + user.getUserName());
                 return new LoginResponseDto(token, userInfo);
             }
         }
+
         return null;
     }
+
 
     public User saveUserInfo(SaveUserLoginInfoDto saveUserLoginInfoDto){
         User user = new User();

@@ -73,13 +73,23 @@ public class JwtUtil {
 
     // --- (참고) 로그인 성공 시 '토큰 생성' 로직 (로그인 컨트롤러에서 사용) ---
     // (이 메서드는 필요에 따라 수정하세요. 만료 시간 등)
-    public String generateToken(String userId) {
+    public String generateToken(String userId, String userName, String role) {
         long now = System.currentTimeMillis();
         return Jwts.builder()
                 .setSubject(userId) // ⬅️ 여기에 학번(userId)을 저장
+                .claim("name", userName) // 🔥 사용자 이름 추가
+                .claim("role", role)
                 .setIssuedAt(new Date(now))
                 .setExpiration(new Date(now + 1000 * 60 * 60 * 24)) // 예: 24시간 후 만료
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
+    public String getNameFromToken(String token) {
+        return extractClaim(token, claims -> claims.get("name", String.class));
+    }
+
+    public String getRoleFromToken(String token) {
+        return extractClaim(token, claims -> claims.get("role", String.class));
+    }
+
 }

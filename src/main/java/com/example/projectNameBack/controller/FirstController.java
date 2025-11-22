@@ -47,11 +47,12 @@ public class FirstController {
         LoginResponseDto response = authService.login(userID, password);
 
         if(response != null){
-            return ResponseEntity.ok(response); // 로그인 성공: 사용자 정보 반환
+            return ResponseEntity.ok(response);
         } else {
             return ResponseEntity.status(401).body("로그인 실패");
         }
     }
+
 
     @PostMapping("/scops/userRegister")
     public ResponseEntity<Boolean> userRegister(@RequestBody SaveUserLoginInfoDto dto){
