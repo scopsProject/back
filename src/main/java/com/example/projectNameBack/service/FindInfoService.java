@@ -4,6 +4,7 @@ import com.example.projectNameBack.controller.SseController;
 import com.example.projectNameBack.dto.*;
 import com.example.projectNameBack.entity.Reservation;
 import com.example.projectNameBack.entity.SongRegister;
+import com.example.projectNameBack.entity.User;
 import com.example.projectNameBack.repository.ReservationRepository;
 import com.example.projectNameBack.repository.SongRegisterRepository;
 import com.example.projectNameBack.repository.UserLoginInfoRepository;
@@ -144,6 +145,16 @@ public class FindInfoService {
         reservation.setDate(dto.getDate());
         reservation.setStartTime(dto.getStartTime().withSecond(0).withNano(0));
         reservation.setEndTime(dto.getEndTime().withSecond(0).withNano(0));
+
+        if (dto.getUserName() != null) {
+            User user = userLoginInfoRepository.findByUserName(dto.getUserName())
+                    .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다: " + dto.getUserName()));
+
+            reservation.setUser(user); // ✅ DB의 user_id 컬럼에 저장됨!
+        } else {
+            // 로그인 안 한 상태로 예약을 시도했다면 에러를 내거나 처리가 필요함
+            throw new IllegalArgumentException("로그인 정보(사용자 이름)가 없습니다.");
+        }
 
         if (dto.getSongRegisterId() != null) {
             SongRegister songRegister = songRegisterRepository.findById(dto.getSongRegisterId())

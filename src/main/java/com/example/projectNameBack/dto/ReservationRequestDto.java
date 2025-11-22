@@ -12,6 +12,7 @@ import java.util.List;
 @Getter
 @Setter
 public class ReservationRequestDto {
+    private String userName;
     private String singerName;  // 프론트에 맞춤
     private String songName;
     @JsonFormat(pattern = "yyyy-MM-dd")
