@@ -10,6 +10,7 @@ import com.example.projectNameBack.repository.UserLoginInfoRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -33,7 +34,11 @@ public class SongRegisterService {
         songRegister.setSongName(dto.getSongName());
         songRegister.setSingerName(dto.getSingerName());
         songRegister.setUserName(dto.getUserName());
-        songRegister.setDate(dto.getDate());
+        if (dto.getDate() != null) {
+            songRegister.setDate(dto.getDate());
+        } else {
+            songRegister.setDate(LocalDate.now());
+        }
 
         // 1️⃣ 세션 추가 (🔥 수정됨: 이름으로 유저 찾아서 저장)
         List<SongSessionDto> sessions = dto.getSessions();

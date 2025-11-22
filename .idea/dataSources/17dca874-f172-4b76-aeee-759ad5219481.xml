@@ -921,7 +921,7 @@
     <schema id="292" parent="1" name="scops">
       <AutoIntrospectionLevel>3</AutoIntrospectionLevel>
       <LastIntrospectionLevel>3</LastIntrospectionLevel>
-      <LastIntrospectionLocalTimestamp>2025-11-21.13:04:49</LastIntrospectionLocalTimestamp>
+      <LastIntrospectionLocalTimestamp>2025-11-22.06:17:22</LastIntrospectionLocalTimestamp>
       <CollationName>utf8mb4_0900_ai_ci</CollationName>
     </schema>
     <user id="293" parent="1" name="root">
@@ -1129,73 +1129,86 @@ user_id</ColNames>
       <Position>4</Position>
       <StoredType>bigint|0s</StoredType>
     </column>
-    <foreign-key id="338" parent="302" name="FKqvcn2vyp4rud67sfoy1s03n8r">
+    <column id="338" parent="302" name="user_id">
+      <Position>5</Position>
+      <StoredType>bigint|0s</StoredType>
+    </column>
+    <foreign-key id="339" parent="302" name="FKqvcn2vyp4rud67sfoy1s03n8r">
       <ColNames>song_register_id</ColNames>
       <OnDelete>cascade</OnDelete>
       <RefColNames>id</RefColNames>
       <RefTableName>song_register</RefTableName>
     </foreign-key>
-    <index id="339" parent="302" name="PRIMARY">
+    <foreign-key id="340" parent="302" name="FKcu97myt68vb5npm5dvxeqvdc4">
+      <ColNames>user_id</ColNames>
+      <RefColNames>id</RefColNames>
+      <RefTableName>user</RefTableName>
+    </foreign-key>
+    <index id="341" parent="302" name="PRIMARY">
       <ColNames>id</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <index id="340" parent="302" name="FKqvcn2vyp4rud67sfoy1s03n8r">
+    <index id="342" parent="302" name="FKqvcn2vyp4rud67sfoy1s03n8r">
       <ColNames>song_register_id</ColNames>
       <Type>btree</Type>
     </index>
-    <key id="341" parent="302" name="PRIMARY">
+    <index id="343" parent="302" name="FKcu97myt68vb5npm5dvxeqvdc4">
+      <ColNames>user_id</ColNames>
+      <Type>btree</Type>
+    </index>
+    <key id="344" parent="302" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <Primary>1</Primary>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
-    <column id="342" parent="303" name="id">
+    <column id="345" parent="303" name="id">
       <AutoIncrement>15</AutoIncrement>
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StoredType>bigint|0s</StoredType>
     </column>
-    <column id="343" parent="303" name="role">
+    <column id="346" parent="303" name="role">
       <Position>2</Position>
       <StoredType>varchar(255)|0s</StoredType>
     </column>
-    <column id="344" parent="303" name="session">
+    <column id="347" parent="303" name="session">
       <Position>3</Position>
       <StoredType>varchar(255)|0s</StoredType>
     </column>
-    <column id="345" parent="303" name="userid">
+    <column id="348" parent="303" name="userid">
       <Position>4</Position>
       <StoredType>varchar(255)|0s</StoredType>
     </column>
-    <column id="346" parent="303" name="user_name">
+    <column id="349" parent="303" name="user_name">
       <Position>5</Position>
       <StoredType>varchar(255)|0s</StoredType>
     </column>
-    <column id="347" parent="303" name="user_password">
+    <column id="350" parent="303" name="user_password">
       <Position>6</Position>
       <StoredType>varchar(255)|0s</StoredType>
     </column>
-    <column id="348" parent="303" name="user_year">
+    <column id="351" parent="303" name="user_year">
       <NotNull>1</NotNull>
       <Position>7</Position>
       <StoredType>int|0s</StoredType>
     </column>
-    <index id="349" parent="303" name="PRIMARY">
+    <index id="352" parent="303" name="PRIMARY">
       <ColNames>id</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <index id="350" parent="303" name="UKcvaouvg098letvsfxhk5282j9">
+    <index id="353" parent="303" name="UKcvaouvg098letvsfxhk5282j9">
       <ColNames>userid</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <key id="351" parent="303" name="PRIMARY">
+    <key id="354" parent="303" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <Primary>1</Primary>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
-    <key id="352" parent="303" name="UKcvaouvg098letvsfxhk5282j9">
+    <key id="355" parent="303" name="UKcvaouvg098letvsfxhk5282j9">
       <UnderlyingIndexName>UKcvaouvg098letvsfxhk5282j9</UnderlyingIndexName>
     </key>
   </database-model>
