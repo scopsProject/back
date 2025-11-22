@@ -35,19 +35,23 @@ public class SongRegisterService {
         songRegister.setUserName(dto.getUserName());
         songRegister.setDate(dto.getDate());
 
-        // 1️⃣ 세션 추가
+        // 1️⃣ 세션 추가 (🔥 수정됨: 이름으로 유저 찾아서 저장)
         List<SongSessionDto> sessions = dto.getSessions();
         if (sessions != null) {
             sessions.forEach(s -> {
+                // 이름으로 유저 찾기
+                User player = userLoginInfoRepository.findByUserName(s.getPlayerName())
+                        .orElseThrow(() -> new IllegalArgumentException("해당 이름의 유저를 찾을 수 없습니다: " + s.getPlayerName()));
+
                 SongSession session = new SongSession();
-                session.setPlayerName(s.getPlayerName());
+                session.setPlayer(player); // ✅ 객체 저장
                 session.setSessionType(s.getSessionType());
                 session.setSongRegister(songRegister);
                 songRegister.getSessions().add(session);
             });
         }
 
-        // 2️⃣ 참여자 추가
+        // 2️⃣ 참여자 추가 (이건 기존 로직 유지 - ID로 찾기)
         if (dto.getParticipantIds() != null) {
             Set<User> participants = new HashSet<>();
             dto.getParticipantIds().forEach(userId -> {
@@ -58,7 +62,6 @@ public class SongRegisterService {
             songRegister.setParticipants(participants);
         }
 
-        // 3️⃣ 저장
         return songRegisterRepository.save(songRegister);
     }
 
@@ -77,11 +80,15 @@ public class SongRegisterService {
         // 기존 세션 삭제
         songRegister.getSessions().clear();
 
-        // 새로운 세션 추가
+        // 새로운 세션 추가 (🔥 수정됨)
         if (dto.getSessions() != null) {
             dto.getSessions().forEach(sessionDto -> {
+                // 이름으로 유저 찾기
+                User player = userLoginInfoRepository.findByUserName(sessionDto.getPlayerName())
+                        .orElseThrow(() -> new IllegalArgumentException("해당 이름의 유저를 찾을 수 없습니다: " + sessionDto.getPlayerName()));
+
                 SongSession session = new SongSession();
-                session.setPlayerName(sessionDto.getPlayerName());
+                session.setPlayer(player); // ✅ 객체 저장
                 session.setSessionType(sessionDto.getSessionType());
                 session.setSongRegister(songRegister);
                 songRegister.getSessions().add(session);
@@ -98,7 +105,6 @@ public class SongRegisterService {
             });
             songRegister.setParticipants(participants);
         } else {
-            // 참여자 목록 비우기
             songRegister.getParticipants().clear();
         }
 
@@ -109,11 +115,7 @@ public class SongRegisterService {
     public void deleteSong(Long id) {
         SongRegister songRegister = songRegisterRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 노래 신청을 찾을 수 없습니다. id=" + id));
-
-        // ManyToMany 조인 테이블에서 관계 제거
         songRegister.getParticipants().clear();
-
-        // 세션은 orphanRemoval = true 덕분에 자동 삭제
         songRegisterRepository.delete(songRegister);
     }
 }

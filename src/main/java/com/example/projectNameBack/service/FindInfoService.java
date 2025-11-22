@@ -44,7 +44,14 @@ public class FindInfoService {
                                     .map(session -> {
                                         SongSessionDto sessionDto = new SongSessionDto();
                                         sessionDto.setSessionType(session.getSessionType());
-                                        sessionDto.setPlayerName(session.getPlayerName());
+
+                                        // ✅ User 객체에서 이름 꺼내기 (Null 체크 포함)
+                                        if (session.getPlayer() != null) {
+                                            sessionDto.setPlayerName(session.getPlayer().getUserName());
+                                        } else {
+                                            sessionDto.setPlayerName("알 수 없음(탈퇴)");
+                                        }
+
                                         return sessionDto;
                                     }).collect(Collectors.toList())
                     );
@@ -64,9 +71,14 @@ public class FindInfoService {
                         .date(reservation.getDate())
                         .startTime(reservation.getStartTime())
                         .endTime(reservation.getEndTime())
-                        .sessions(reservation.getSongRegister().getSessions().stream()
-                                .map(session -> new SongSessionDto(session.getSessionType(), session.getPlayerName()))
-                                .toList()
+                        .sessions(reservation.getSongRegister() != null ? // null check 추가
+                                reservation.getSongRegister().getSessions().stream()
+                                        .map(session -> new SongSessionDto(
+                                                session.getSessionType(),
+                                                // ✅ User 객체에서 이름 꺼내기
+                                                session.getPlayer() != null ? session.getPlayer().getUserName() : "Unknown"
+                                        ))
+                                        .toList() : List.of() // 곡 정보가 없으면 빈 리스트
                         )
                         .build()
                 ).toList();

@@ -12,7 +12,10 @@ public class SongSession {
     private Long id;
 
     private String sessionType;   // 예: V, G, D
-    private String playerName;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id") // ✅ User 테이블의 ID를 저장 (외래키)
+    private User player;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "song_register_id")

@@ -25,4 +25,5 @@ public interface UserLoginInfoRepository extends JpaRepository<User, Long> {
     int deleteUserFromReservations(@Param("userID") Long userId);
     @Query("SELECT u FROM User u")
     List<User> findAllUsers();
+    Optional<User> findByUserName(String userName);
 }
