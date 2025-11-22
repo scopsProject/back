@@ -6,6 +6,7 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -18,4 +19,5 @@ public class SongRegisterDto {
     private String userName;
     private LocalDate date;
     private List<SongSessionDto> sessions;
+    private Set<Long> participantIds;
 }

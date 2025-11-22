@@ -59,7 +59,7 @@ public class AuthService {
         user.setUserName(saveUserLoginInfoDto.getUserName());
         user.setUserYear(saveUserLoginInfoDto.getUserYear());
         user.setSession(saveUserLoginInfoDto.getSession());
-        user.setRole("none"); // ⬅️ (참고) 권한(role)을 "USER" 등으로 설정하는 것을 권장합니다.
+        user.setRole(saveUserLoginInfoDto.getRole()); // ⬅️ (참고) 권한(role)을 "USER" 등으로 설정하는 것을 권장합니다.
         return userLoginInfoRepository.save(user);
     }
 
