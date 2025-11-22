@@ -87,7 +87,7 @@ public class FindInfoService {
     public List<UserInfoDto> getSessions() {
         return userLoginInfoRepository.findAllUsers()
                 .stream()
-                .map(u -> new UserInfoDto(u.getUserName(), u.getSession(), u.getUserYear()))
+                .map(u -> new UserInfoDto(u.getUserName(), u.getSession(), u.getUserYear(), u.getRole()))
                 .toList();
     }
     public List<ReservationDto> getReservationsForMonth(LocalDate start, LocalDate end) {

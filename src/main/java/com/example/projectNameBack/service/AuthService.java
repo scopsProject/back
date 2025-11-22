@@ -50,7 +50,8 @@ public class AuthService {
                 UserInfoDto userInfo = new UserInfoDto(
                         user.getUserName(),
                         user.getSession(),
-                        user.getUserYear()
+                        user.getUserYear(),
+                        user.getRole()
                 );
 
                 System.out.println("로그인 성공: " + user.getUserName());
