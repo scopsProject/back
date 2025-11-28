@@ -1,10 +1,8 @@
 package com.example.projectNameBack.service;
 
-import com.example.projectNameBack.controller.SseController;
 import com.example.projectNameBack.dto.*;
-import com.example.projectNameBack.entity.Reservation;
-import com.example.projectNameBack.entity.SongRegister;
-import com.example.projectNameBack.entity.User;
+import com.example.projectNameBack.entity.*;
+import com.example.projectNameBack.repository.EventRepository; // 🔥 추가
 import com.example.projectNameBack.repository.ReservationRepository;
 import com.example.projectNameBack.repository.SongRegisterRepository;
 import com.example.projectNameBack.repository.UserLoginInfoRepository;
@@ -21,14 +19,22 @@ public class FindInfoService {
     private final ReservationRepository reservationRepository;
     private final UserLoginInfoRepository userLoginInfoRepository;
     private final SseService sseService;
+    private final EventRepository eventRepository; // 🔥 추가: Event 객체 찾기용
 
-    public FindInfoService(SongRegisterRepository songRegisterRepository, ReservationRepository reservationRepository, UserLoginInfoRepository userLoginInfoRepository, SseService sseService) {
+    // 생성자에 EventRepository 추가
+    public FindInfoService(SongRegisterRepository songRegisterRepository,
+                           ReservationRepository reservationRepository,
+                           UserLoginInfoRepository userLoginInfoRepository,
+                           SseService sseService,
+                           EventRepository eventRepository) {
         this.songRegisterRepository = songRegisterRepository;
         this.reservationRepository = reservationRepository;
         this.userLoginInfoRepository = userLoginInfoRepository;
         this.sseService = sseService;
+        this.eventRepository = eventRepository;
     }
 
+    // 1. 특정 행사의 곡 목록 가져오기
     public List<SongRegisterDto> getSongsByEvent(String eventName) {
         List<SongRegister> songRegisters = songRegisterRepository.findByEventName(eventName);
 
@@ -36,7 +42,12 @@ public class FindInfoService {
                 .map(songRegister -> {
                     SongRegisterDto dto = new SongRegisterDto();
                     dto.setId(songRegister.getId());
-                    dto.setEventName(songRegister.getEventName());
+
+                    // 🔥 [수정] Event 객체에서 이름 꺼내기
+                    if (songRegister.getEvent() != null) {
+                        dto.setEventName(songRegister.getEvent().getEventName());
+                    }
+
                     dto.setSongName(songRegister.getSongName());
                     dto.setSingerName(songRegister.getSingerName());
                     dto.setUserName(songRegister.getUserName());
@@ -46,7 +57,6 @@ public class FindInfoService {
                                         SongSessionDto sessionDto = new SongSessionDto();
                                         sessionDto.setSessionType(session.getSessionType());
 
-                                        // ✅ User 객체에서 이름 꺼내기 (Null 체크 포함)
                                         if (session.getPlayer() != null) {
                                             sessionDto.setPlayerName(session.getPlayer().getUserName());
                                         } else {
@@ -60,37 +70,44 @@ public class FindInfoService {
                 }).collect(Collectors.toList());
     }
 
+    // 2. 날짜별 예약 정보 가져오기
     public List<ReservationDto> getReservationsByDateRange(LocalDate start, LocalDate end) {
         List<Reservation> reservations = reservationRepository.findWithSessionsByDateRange(start, end);
         System.out.println("조회된 예약 수(기간): " + reservations.size());
 
         return reservations.stream()
                 .map(reservation -> ReservationDto.builder()
-                        .eventName(reservation.getEventName())
+                        // 🔥 [수정] Event 객체에서 이름 꺼내기
+                        .eventName(reservation.getEvent() != null ? reservation.getEvent().getEventName() : "Unknown")
+
                         .singerName(reservation.getSingerName())
                         .songName(reservation.getSongName())
                         .date(reservation.getDate())
                         .startTime(reservation.getStartTime())
                         .endTime(reservation.getEndTime())
-                        .sessions(reservation.getSongRegister() != null ? // null check 추가
+                        .sessions(reservation.getSongRegister() != null ?
                                 reservation.getSongRegister().getSessions().stream()
                                         .map(session -> new SongSessionDto(
                                                 session.getSessionType(),
-                                                // ✅ User 객체에서 이름 꺼내기
                                                 session.getPlayer() != null ? session.getPlayer().getUserName() : "Unknown"
                                         ))
-                                        .toList() : List.of() // 곡 정보가 없으면 빈 리스트
+                                        .toList() : List.of()
                         )
                         .build()
                 ).toList();
     }
 
-
-
+    // 3. 행사 이름 목록 가져오기 (EventRepository 사용)
     public List<String> getEventNames() {
-        return songRegisterRepository.findDistinctEventNames();
+        // 🔥 [수정] SongRegister가 아니라 Event 테이블에서 직접 모든 행사 이름을 가져옵니다.
+        return eventRepository.findAll().stream()
+                .map(Event::getEventName)
+                .collect(Collectors.toList());
     }
+
+    // 4. (참고) 단순 조회용 메소드들
     public List<SongRegister> findSongsByEventName(String eventName) {
+        // JPA Naming Rule에 따라 findByEvent_EventName 권장
         return songRegisterRepository.findByEventName(eventName);
     }
     public List<SongRegister> findSingerNameBySongName(String songName) {
@@ -103,26 +120,34 @@ public class FindInfoService {
                 .map(u -> new UserInfoDto(u.getUserName(), u.getSession(), u.getUserYear(), u.getRole()))
                 .toList();
     }
+
+    // 5. 월별 예약 조회
     public List<ReservationDto> getReservationsForMonth(LocalDate start, LocalDate end) {
         return reservationRepository.findByDateBetween(start, end)
                 .stream()
-                .map(ReservationDto::fromEntity)
+                .map(reservation -> {
+                    // DTO 변환 로직 (ReservationDto.fromEntity 내부도 수정 필요할 수 있음)
+                    return ReservationDto.builder()
+                            .id(reservation.getId())
+                            .date(reservation.getDate())
+                            .startTime(reservation.getStartTime())
+                            .endTime(reservation.getEndTime())
+                            .songName(reservation.getSongName())
+                            .singerName(reservation.getSingerName())
+                            // 🔥 [수정] 객체에서 꺼내기
+                            .eventName(reservation.getEvent() != null ? reservation.getEvent().getEventName() : null)
+                            .build();
+                })
                 .collect(Collectors.toList());
     }
+
+    // 6. 예약하기 (가장 중요!)
     @Transactional
     public void reserveSong(ReservationRequestDto dto) {
 
         System.out.println("=== 예약 요청 DTO 확인 ===");
-        System.out.println("eventName = " + dto.getEventName());
-        System.out.println("singer = " + dto.getSingerName());
-        System.out.println("title = " + dto.getSongName());
-        System.out.println("date = " + dto.getDate());
-        System.out.println("startTime = " + dto.getStartTime());
-        System.out.println("endTime = " + dto.getEndTime());
-        System.out.println("songRegisterId = " + dto.getSongRegisterId());
+        // ... 로그 생략 ...
 
-
-        /* 🔥 1. 동시 예약 방지 - DB 락 걸린 상태로 중복 조회 */
         List<Reservation> overlapped = reservationRepository.findOverlappingReservations(
                 dto.getDate(),
                 dto.getStartTime(),
@@ -131,28 +156,29 @@ public class FindInfoService {
 
         if (!overlapped.isEmpty()) {
             throw new IllegalStateException(
-                    "이미 예약된 시간대입니다. (" +
-                            dto.getStartTime() + " ~ " + dto.getEndTime() + ")"
+                    "이미 예약된 시간대입니다. (" + dto.getStartTime() + " ~ " + dto.getEndTime() + ")"
             );
         }
 
-
-        /* 🔥 2. 예약 생성 */
         Reservation reservation = new Reservation();
-        reservation.setEventName(dto.getEventName());
+
+        // 🔥 [수정] 행사 이름으로 Event 객체 찾아서 저장하기
+        Event event = eventRepository.findByEventName(dto.getEventName())
+                .orElseThrow(() -> new IllegalArgumentException("해당 행사를 찾을 수 없습니다: " + dto.getEventName()));
+        reservation.setEvent(event); // ✅ 객체 저장
+
         reservation.setSingerName(dto.getSingerName());
         reservation.setSongName(dto.getSongName());
         reservation.setDate(dto.getDate());
         reservation.setStartTime(dto.getStartTime().withSecond(0).withNano(0));
         reservation.setEndTime(dto.getEndTime().withSecond(0).withNano(0));
 
+        // 사용자 저장 (이전 턴에서 수정한 부분)
         if (dto.getUserName() != null) {
             User user = userLoginInfoRepository.findByUserName(dto.getUserName())
                     .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다: " + dto.getUserName()));
-
-            reservation.setUser(user); // ✅ DB의 user_id 컬럼에 저장됨!
+            reservation.setUser(user);
         } else {
-            // 로그인 안 한 상태로 예약을 시도했다면 에러를 내거나 처리가 필요함
             throw new IllegalArgumentException("로그인 정보(사용자 이름)가 없습니다.");
         }
 
@@ -162,11 +188,7 @@ public class FindInfoService {
             reservation.setSongRegister(songRegister);
         }
 
-
-        /* 🔥 3. DB 저장 */
         reservationRepository.save(reservation);
-
         sseService.broadcast(dto);
     }
-
 }

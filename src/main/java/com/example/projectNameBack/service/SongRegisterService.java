@@ -2,9 +2,11 @@ package com.example.projectNameBack.service;
 
 import com.example.projectNameBack.dto.SongRegisterDto;
 import com.example.projectNameBack.dto.SongSessionDto;
+import com.example.projectNameBack.entity.Event;
 import com.example.projectNameBack.entity.SongRegister;
 import com.example.projectNameBack.entity.SongSession;
 import com.example.projectNameBack.entity.User;
+import com.example.projectNameBack.repository.EventRepository;
 import com.example.projectNameBack.repository.SongRegisterRepository;
 import com.example.projectNameBack.repository.UserLoginInfoRepository;
 import jakarta.transaction.Transactional;
@@ -20,43 +22,50 @@ public class SongRegisterService {
 
     private final SongRegisterRepository songRegisterRepository;
     private final UserLoginInfoRepository userLoginInfoRepository;
+    private final EventRepository eventRepository;
 
     public SongRegisterService(SongRegisterRepository songRegisterRepository,
-                               UserLoginInfoRepository userLoginInfoRepository) {
+                               UserLoginInfoRepository userLoginInfoRepository, EventRepository eventRepository) {
         this.songRegisterRepository = songRegisterRepository;
         this.userLoginInfoRepository = userLoginInfoRepository;
+        this.eventRepository = eventRepository;
     }
 
     @Transactional
     public SongRegister saveSongRegister(SongRegisterDto dto) {
         SongRegister songRegister = new SongRegister();
-        songRegister.setEventName(dto.getEventName());
+
+        // 1. Event 객체 찾아서 설정 (이미 잘 되어있음)
+        Event event = eventRepository.findByEventName(dto.getEventName())
+                .orElseThrow(() -> new IllegalArgumentException("해당 행사를 찾을 수 없습니다: " + dto.getEventName()));
+        songRegister.setEvent(event);
+
         songRegister.setSongName(dto.getSongName());
         songRegister.setSingerName(dto.getSingerName());
         songRegister.setUserName(dto.getUserName());
+
         if (dto.getDate() != null) {
             songRegister.setDate(dto.getDate());
         } else {
             songRegister.setDate(LocalDate.now());
         }
 
-        // 1️⃣ 세션 추가 (🔥 수정됨: 이름으로 유저 찾아서 저장)
+        // 세션 추가 로직
         List<SongSessionDto> sessions = dto.getSessions();
         if (sessions != null) {
             sessions.forEach(s -> {
-                // 이름으로 유저 찾기
                 User player = userLoginInfoRepository.findByUserName(s.getPlayerName())
                         .orElseThrow(() -> new IllegalArgumentException("해당 이름의 유저를 찾을 수 없습니다: " + s.getPlayerName()));
 
                 SongSession session = new SongSession();
-                session.setPlayer(player); // ✅ 객체 저장
+                session.setPlayer(player);
                 session.setSessionType(s.getSessionType());
                 session.setSongRegister(songRegister);
                 songRegister.getSessions().add(session);
             });
         }
 
-        // 2️⃣ 참여자 추가 (이건 기존 로직 유지 - ID로 찾기)
+        // 참여자 추가 로직
         if (dto.getParticipantIds() != null) {
             Set<User> participants = new HashSet<>();
             dto.getParticipantIds().forEach(userId -> {
@@ -75,8 +84,10 @@ public class SongRegisterService {
         SongRegister songRegister = songRegisterRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 노래 신청을 찾을 수 없습니다. id=" + id));
 
-        // 메인 필드 업데이트
-        songRegister.setEventName(dto.getEventName());
+        Event event = eventRepository.findByEventName(dto.getEventName())
+                .orElseThrow(() -> new IllegalArgumentException("해당 행사를 찾을 수 없습니다: " + dto.getEventName()));
+        songRegister.setEvent(event);
+
         songRegister.setSongName(dto.getSongName());
         songRegister.setSingerName(dto.getSingerName());
         songRegister.setUserName(dto.getUserName());
@@ -85,15 +96,14 @@ public class SongRegisterService {
         // 기존 세션 삭제
         songRegister.getSessions().clear();
 
-        // 새로운 세션 추가 (🔥 수정됨)
+        // 새로운 세션 추가
         if (dto.getSessions() != null) {
             dto.getSessions().forEach(sessionDto -> {
-                // 이름으로 유저 찾기
                 User player = userLoginInfoRepository.findByUserName(sessionDto.getPlayerName())
                         .orElseThrow(() -> new IllegalArgumentException("해당 이름의 유저를 찾을 수 없습니다: " + sessionDto.getPlayerName()));
 
                 SongSession session = new SongSession();
-                session.setPlayer(player); // ✅ 객체 저장
+                session.setPlayer(player);
                 session.setSessionType(sessionDto.getSessionType());
                 session.setSongRegister(songRegister);
                 songRegister.getSessions().add(session);

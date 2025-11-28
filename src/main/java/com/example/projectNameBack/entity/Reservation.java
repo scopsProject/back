@@ -19,7 +19,9 @@ public class Reservation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String eventName;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "event_id")
+    private Event event; // String eventName 대신 이거 사용!
     private String singerName;
     private String songName;
 
