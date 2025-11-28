@@ -37,9 +37,14 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
                 .authorizeHttpRequests(authz -> authz
-                        // ⬇️ ‼️ 로그인, 회원가입은 'permitAll' ‼️
-                        .requestMatchers("/scops/userRegister", "/api/scops/login", "/scops/login", "/sse/subscribe", "/songs/**").permitAll()
-                        .anyRequest().authenticated() // ⬅️ 나머지 모든 요청은 '인증' 필요
+                        // 1. 로그인, 회원가입, SSE는 누구나 허용
+                        .requestMatchers("/scops/userRegister", "/api/scops/login", "/scops/login", "/sse/subscribe").permitAll()
+
+                        // 2. [수정] 노래 관련 기능은 '로그인한 사람'만 가능하게 변경
+                        .requestMatchers("/songs/**").authenticated()
+
+                        // 3. 나머지도 인증 필요
+                        .anyRequest().authenticated()
                 )
 
                 // ⬇️ ‼️ JWT 필터를 Security 필터 체인에 추가 ‼️
