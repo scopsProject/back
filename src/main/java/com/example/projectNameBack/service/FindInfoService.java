@@ -36,7 +36,7 @@ public class FindInfoService {
 
     // 1. 특정 행사의 곡 목록 가져오기
     public List<SongRegisterDto> getSongsByEvent(String eventName) {
-        List<SongRegister> songRegisters = songRegisterRepository.findByEventName(eventName);
+        List<SongRegister> songRegisters = songRegisterRepository.findByEvent_EventName(eventName);
 
         return songRegisters.stream()
                 .map(songRegister -> {
@@ -108,7 +108,7 @@ public class FindInfoService {
     // 4. (참고) 단순 조회용 메소드들
     public List<SongRegister> findSongsByEventName(String eventName) {
         // JPA Naming Rule에 따라 findByEvent_EventName 권장
-        return songRegisterRepository.findByEventName(eventName);
+        return songRegisterRepository.findByEvent_EventName(eventName);
     }
     public List<SongRegister> findSingerNameBySongName(String songName) {
         return songRegisterRepository.findBySongName(songName);

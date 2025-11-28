@@ -17,7 +17,6 @@ public class SongRegister {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String userName;
-    private String eventName;
     private String songName;
     private LocalDate date;
     private String singerName;
