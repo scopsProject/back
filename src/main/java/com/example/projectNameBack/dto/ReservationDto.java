@@ -29,6 +29,7 @@ public class ReservationDto {
                 .endTime(entity.getEndTime())
                 .songName(entity.getSongName())
                 .singerName(entity.getSingerName())
+                .eventName(entity.getEvent() != null ? entity.getEvent().getEventName() : null)
                 .build();
     }
 
