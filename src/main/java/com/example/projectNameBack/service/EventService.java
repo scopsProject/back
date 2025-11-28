@@ -6,6 +6,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class EventService {
@@ -24,5 +27,9 @@ public class EventService {
         event.setEndDate(dto.getEndDate());
 
         return eventRepository.save(event);
+    }
+    @Transactional(readOnly = true)
+    public List<Event> getEventsByPeriod(LocalDate start, LocalDate end) {
+        return eventRepository.findEventsByPeriod(start, end);
     }
 }
