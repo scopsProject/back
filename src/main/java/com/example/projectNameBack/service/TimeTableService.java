@@ -62,4 +62,50 @@ public class TimeTableService {
                 ))
                 .collect(Collectors.toList());
     }
+    // ...
+    @Transactional
+    public void updateTimeTable(Long id, String userId, TimeTableDto dto) {
+        TimeTable timeTable = timeTableRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("시간표를 찾을 수 없습니다."));
+
+        // 본인 확인 (선택사항이지만 보안상 좋음)
+        if (!timeTable.getUser().getUserID().equals(userId)) {
+            throw new IllegalArgumentException("권한이 없습니다.");
+        }
+
+        // 🔥 중복 검사 (내 ID 제외)
+        boolean isOverlapped = timeTableRepository.existsOverlapForUpdate(
+                timeTable.getUser().getId(),
+                id, // 내 ID
+                dto.getDayOfWeek(),
+                dto.getStartTime(),
+                dto.getEndTime()
+        );
+
+        if (isOverlapped) {
+            throw new IllegalArgumentException("해당 시간에 이미 일정이 존재합니다.");
+        }
+
+        // 업데이트
+        timeTable.setTitle(dto.getTitle());
+        timeTable.setMemo(dto.getMemo());
+        timeTable.setDayOfWeek(dto.getDayOfWeek());
+        timeTable.setStartTime(dto.getStartTime());
+        timeTable.setEndTime(dto.getEndTime());
+        // save 안 해도 Transactional 덕분에 자동 업데이트 (Dirty Checking)
+    }
+
+    @Transactional
+    public void deleteTimeTable(Long id, String userId) {
+        TimeTable timeTable = timeTableRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("시간표를 찾을 수 없습니다."));
+
+        // 본인 확인
+        if (!timeTable.getUser().getUserID().equals(userId)) {
+            throw new IllegalArgumentException("권한이 없습니다.");
+        }
+
+        timeTableRepository.delete(timeTable);
+    }
+// ...
 }

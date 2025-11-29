@@ -8,10 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -44,4 +41,32 @@ public class TimeTableController {
         List<TimeTableDto> timeTables = timeTableService.getTimeTables(userDetails.getUsername());
         return ResponseEntity.ok(timeTables);
     }
+    // ...
+    @PutMapping("/timetables/{id}") // 주소 주의 (/scops/timetable/{id} 라면 수정 필요)
+    public ResponseEntity<?> updateTimeTable(
+            @PathVariable Long id,
+            @RequestBody TimeTableDto dto,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        try {
+            timeTableService.updateTimeTable(id, userDetails.getUsername(), dto);
+            return ResponseEntity.ok("수정 성공");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/timetables/{id}")
+    public ResponseEntity<?> deleteTimeTable(
+            @PathVariable Long id,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        try {
+            timeTableService.deleteTimeTable(id, userDetails.getUsername());
+            return ResponseEntity.ok("삭제 성공");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+// ...
 }

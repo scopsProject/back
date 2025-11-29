@@ -21,4 +21,16 @@ public interface TimeTableRepository extends JpaRepository<TimeTable, Long> {
                           @Param("dayOfWeek") DayOfWeek dayOfWeek,
                           @Param("startTime") LocalTime startTime,
                           @Param("endTime") LocalTime endTime);
+    @Query("SELECT COUNT(t) > 0 " +
+            "FROM TimeTable t " +
+            "WHERE t.user.id = :userId " +
+            "AND t.id <> :myId " +  // 👈 내 ID는 제외!
+            "AND t.dayOfWeek = :dayOfWeek " +
+            "AND t.startTime < :endTime " +
+            "AND t.endTime > :startTime")
+    boolean existsOverlapForUpdate(@Param("userId") Long userId,
+                                   @Param("myId") Long myId,
+                                   @Param("dayOfWeek") DayOfWeek dayOfWeek,
+                                   @Param("startTime") LocalTime startTime,
+                                   @Param("endTime") LocalTime endTime);
 }
