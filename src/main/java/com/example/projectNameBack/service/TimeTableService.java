@@ -9,6 +9,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @RequiredArgsConstructor
 @Service
 public class TimeTableService {
@@ -31,5 +34,23 @@ public class TimeTableService {
         timeTable.setUser(user);
 
         return timeTableRepository.save(timeTable);
+    }
+    // TimeTableService.java
+
+    @Transactional(readOnly = true)
+    public List<TimeTableDto> getTimeTables(String userId) {
+        User user = userLoginInfoRepository.findByUserID(userId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
+        // Entity 리스트 -> DTO 리스트 변환
+        return user.getTimeTables().stream()
+                .map(t -> new TimeTableDto(
+                        t.getTitle(),
+                        t.getMemo(),
+                        t.getStartTime(),
+                        t.getEndTime(),
+                        t.getDayOfWeek()
+                ))
+                .collect(Collectors.toList());
     }
 }
