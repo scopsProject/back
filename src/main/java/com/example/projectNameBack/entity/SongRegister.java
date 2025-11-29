@@ -1,5 +1,6 @@
 package com.example.projectNameBack.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -23,6 +24,7 @@ public class SongRegister {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "event_id") // DB에는 event_id 컬럼이 생깁니다.
+    @JsonIgnore
     private Event event;
 
     @OneToMany(mappedBy = "songRegister", cascade = CascadeType.ALL, orphanRemoval = true)
