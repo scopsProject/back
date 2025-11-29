@@ -25,6 +25,15 @@ public class TimeTableService {
         User user = userLoginInfoRepository.findByUserID(userId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다. ID: " + userId));
 
+        boolean isOverlapped = timeTableRepository.existsOverlap(
+                user.getId(),
+                dto.getDayOfWeek(),
+                dto.getStartTime(),
+                dto.getEndTime()
+        );
+        if (isOverlapped) {
+            throw new IllegalArgumentException("해당 시간에 이미 일정이 존재합니다.");
+        }
         TimeTable timeTable = new TimeTable();
         timeTable.setTitle(dto.getTitle());
         timeTable.setMemo(dto.getMemo());
