@@ -125,19 +125,7 @@ public class FindInfoService {
     public List<ReservationDto> getReservationsForMonth(LocalDate start, LocalDate end) {
         return reservationRepository.findByDateBetween(start, end)
                 .stream()
-                .map(reservation -> {
-                    // DTO 변환 로직 (ReservationDto.fromEntity 내부도 수정 필요할 수 있음)
-                    return ReservationDto.builder()
-                            .id(reservation.getId())
-                            .date(reservation.getDate())
-                            .startTime(reservation.getStartTime())
-                            .endTime(reservation.getEndTime())
-                            .songName(reservation.getSongName())
-                            .singerName(reservation.getSingerName())
-                            // 🔥 [수정] 객체에서 꺼내기
-                            .eventName(reservation.getEvent() != null ? reservation.getEvent().getEventName() : null)
-                            .build();
-                })
+                .map(ReservationDto::fromEntity)
                 .collect(Collectors.toList());
     }
 

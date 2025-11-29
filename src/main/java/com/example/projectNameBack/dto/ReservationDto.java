@@ -6,6 +6,8 @@ import lombok.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.stream.Collectors;
+
 @Builder
 @Getter
 @Setter
@@ -30,6 +32,15 @@ public class ReservationDto {
                 .songName(entity.getSongName())
                 .singerName(entity.getSingerName())
                 .eventName(entity.getEvent() != null ? entity.getEvent().getEventName() : null)
+                .sessions(entity.getSongRegister() != null ?
+                        entity.getSongRegister().getSessions().stream()
+                                .map(session -> new SongSessionDto(
+                                        session.getSessionType(),
+                                        // 유저 이름 꺼내기 (Null 체크 포함)
+                                        session.getPlayer() != null ? session.getPlayer().getUserName() : "알 수 없음"
+                                ))
+                                .collect(Collectors.toList())
+                        : List.of())
                 .build();
     }
 
