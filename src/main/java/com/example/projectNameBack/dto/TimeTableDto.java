@@ -13,6 +13,7 @@ import java.time.LocalTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TimeTableDto {
+    private Long id;
     private String title;
     private String memo;
     private LocalTime startTime;
