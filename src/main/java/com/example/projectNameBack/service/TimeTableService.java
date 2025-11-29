@@ -54,6 +54,7 @@ public class TimeTableService {
         // Entity 리스트 -> DTO 리스트 변환
         return user.getTimeTables().stream()
                 .map(t -> new TimeTableDto(
+                        t.getId(),
                         t.getTitle(),
                         t.getMemo(),
                         t.getStartTime(),
