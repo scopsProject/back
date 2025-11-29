@@ -16,9 +16,11 @@ public class TimeTableService {
     private final UserLoginInfoRepository userLoginInfoRepository;
 
     @Transactional
-    public TimeTable addTimeTable(String userName, TimeTableDto dto) {
-        User user = userLoginInfoRepository.findByUserName(userName)
-                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+    public TimeTable addTimeTable(String userId, TimeTableDto dto) {
+        // 🔥 [수정] findByUserName -> findByUserID
+        // (토큰에 들어있는 건 '이름'이 아니라 '학번(ID)'이기 때문입니다)
+        User user = userLoginInfoRepository.findByUserID(userId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다. ID: " + userId));
 
         TimeTable timeTable = new TimeTable();
         timeTable.setTitle(dto.getTitle());
