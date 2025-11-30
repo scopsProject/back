@@ -74,10 +74,13 @@ public class SongRegisterController {
     }
     @GetMapping("/scops/sessions")
     public ResponseEntity<List<UserInfoDto>> getSessions(
-            @AuthenticationPrincipal UserDetails userDetails // 🔥 현재 접속자 정보 가져오기
+            @AuthenticationPrincipal UserDetails userDetails // 🔥 토큰에서 '내 정보' 확인
     ) {
-        // 서비스에 내 아이디(Username = userID)를 넘겨줍니다.
-        List<UserInfoDto> sessions = findInfoService.getSessions(userDetails.getUsername());
+        // 1. 토큰에서 내 ID(학번) 추출
+        String myId = userDetails.getUsername();
+
+        // 2. 서비스에 "내 ID(myId) 빼고 친구들 리스트 줘" 라고 요청
+        List<UserInfoDto> sessions = findInfoService.getSessions(myId);
 
         return ResponseEntity.ok(sessions);
     }

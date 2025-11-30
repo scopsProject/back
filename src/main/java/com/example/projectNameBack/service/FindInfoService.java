@@ -114,11 +114,15 @@ public class FindInfoService {
         return songRegisterRepository.findBySongName(songName);
     }
 
-    public List<UserInfoDto> getSessions(String currentUserId) { // 👈 파라미터 추가
-        return userLoginInfoRepository.findAllUsers()
-                .stream()
-                // 🔥 [추가] 내 아이디(currentUserId)와 같지 않은 사람만 통과
-                .filter(u -> !u.getUserID().equals(currentUserId))
+    public List<UserInfoDto> getSessions(String myUserId) {
+        // 1. DB에 있는 '모든' 회원 가져오기 (접속 여부와 상관없음!)
+        List<User> allUsers = userLoginInfoRepository.findAll();
+
+        return allUsers.stream()
+                // 2. 🔥 [필터링] 내 아이디(myUserId)와 '다른' 사람만 남기기
+                .filter(u -> !u.getUserID().equals(myUserId))
+
+                // 3. DTO로 변환
                 .map(u -> new UserInfoDto(u.getUserName(), u.getSession(), u.getUserYear(), u.getRole()))
                 .toList();
     }
