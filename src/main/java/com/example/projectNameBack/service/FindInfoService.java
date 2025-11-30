@@ -123,7 +123,13 @@ public class FindInfoService {
                 .filter(u -> !u.getUserID().equals(myUserId))
 
                 // 3. DTO로 변환
-                .map(u -> new UserInfoDto(u.getUserName(), u.getSession(), u.getUserYear(), u.getRole()))
+                .map(u -> new UserInfoDto(
+                        u.getUserID(), // 🔥 학번도 같이 담아서 보냄
+                        u.getUserName(),
+                        u.getSession(),
+                        u.getRole(),
+                        u.getUserYear()
+                ))
                 .toList();
     }
 

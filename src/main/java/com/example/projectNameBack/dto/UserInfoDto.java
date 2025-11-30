@@ -7,15 +7,9 @@ import lombok.Setter;
 
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor
 public class UserInfoDto {
+    private String userID;
     private String userName;
     private String session;
     private String role;
     private int userYear;
-
-    public UserInfoDto(String userName, String session, int userYear, String role) {
-        this.userName = userName;
-        this.session = session;
-        this.userYear = userYear;
-        this.role = role;
-    }
 }
