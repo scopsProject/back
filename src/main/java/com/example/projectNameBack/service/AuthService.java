@@ -48,10 +48,11 @@ public class AuthService {
 
                 // 프론트에 내려줄 사용자 정보 DTO
                 UserInfoDto userInfo = new UserInfoDto(
+                        user.getUserID(),
                         user.getUserName(),
                         user.getSession(),
-                        user.getUserYear(),
-                        user.getRole()
+                        user.getRole(),
+                        user.getUserYear()
                 );
 
                 System.out.println("로그인 성공: " + user.getUserName());
