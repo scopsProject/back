@@ -65,6 +65,9 @@ public class AuthService {
 
 
     public User saveUserInfo(SaveUserLoginInfoDto saveUserLoginInfoDto){
+        if (userLoginInfoRepository.findByUserID(saveUserLoginInfoDto.getUserID()).isPresent()) {
+            throw new IllegalStateException("이미 가입된 학번입니다.");
+        }
         User user = new User();
         user.setUserID(saveUserLoginInfoDto.getUserID());
         user.setUserPassword(passwordEncoder.encode(saveUserLoginInfoDto.getUserPassword()));
