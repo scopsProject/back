@@ -55,12 +55,15 @@ public class FirstController {
 
 
     @PostMapping("/scops/userRegister")
-    public ResponseEntity<Boolean> userRegister(@RequestBody SaveUserLoginInfoDto dto){
+    public ResponseEntity<?> userRegister(@RequestBody SaveUserLoginInfoDto dto){
         try {
-            User saved = authService.saveUserInfo(dto);
-            return ResponseEntity.ok(true);
+            authService.saveUserInfo(dto);
+            return ResponseEntity.ok("회원가입 성공");
+        } catch (IllegalStateException e) {
+            // 🔥 서비스에서 던진 "이미 가입된 학번입니다." 메시지를 프론트로 보냄 (400 에러)
+            return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.ok(false);
+            return ResponseEntity.internalServerError().body("회원가입 중 오류 발생");
         }
     }
     @DeleteMapping("/scops/deleteUser")
