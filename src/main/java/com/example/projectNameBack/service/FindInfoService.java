@@ -114,9 +114,11 @@ public class FindInfoService {
         return songRegisterRepository.findBySongName(songName);
     }
 
-    public List<UserInfoDto> getSessions() {
+    public List<UserInfoDto> getSessions(String currentUserId) { // 👈 파라미터 추가
         return userLoginInfoRepository.findAllUsers()
                 .stream()
+                // 🔥 [추가] 내 아이디(currentUserId)와 같지 않은 사람만 통과
+                .filter(u -> !u.getUserID().equals(currentUserId))
                 .map(u -> new UserInfoDto(u.getUserName(), u.getSession(), u.getUserYear(), u.getRole()))
                 .toList();
     }

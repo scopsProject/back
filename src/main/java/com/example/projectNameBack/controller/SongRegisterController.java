@@ -10,6 +10,8 @@ import com.example.projectNameBack.service.SongRegisterService;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -71,8 +73,13 @@ public class SongRegisterController {
         return findInfoService.getReservationsByDateRange(start, end);
     }
     @GetMapping("/scops/sessions")
-    public List<UserInfoDto> getSessions() {
-        return findInfoService.getSessions();
+    public ResponseEntity<List<UserInfoDto>> getSessions(
+            @AuthenticationPrincipal UserDetails userDetails // 🔥 현재 접속자 정보 가져오기
+    ) {
+        // 서비스에 내 아이디(Username = userID)를 넘겨줍니다.
+        List<UserInfoDto> sessions = findInfoService.getSessions(userDetails.getUsername());
+
+        return ResponseEntity.ok(sessions);
     }
     @GetMapping("/songs/by-month")
     public List<ReservationDto> getMonthlyReservations(@RequestParam String start, @RequestParam String end) {
