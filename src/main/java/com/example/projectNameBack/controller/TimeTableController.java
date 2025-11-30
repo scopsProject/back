@@ -68,5 +68,13 @@ public class TimeTableController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-// ...
+    // 🔥 [추가] 다른 사람(친구) 시간표 조회 API
+    // /timetables/user/{userId}
+    @GetMapping("/timetables/user/{userId}")
+    public ResponseEntity<List<TimeTableDto>> getFriendTimeTable(
+            @PathVariable String userId
+    ) {
+        List<TimeTableDto> timeTables = timeTableService.getTimeTables(userId);
+        return ResponseEntity.ok(timeTables);
+    }
 }
