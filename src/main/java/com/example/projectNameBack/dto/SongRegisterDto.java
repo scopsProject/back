@@ -19,5 +19,4 @@ public class SongRegisterDto {
     private String userName;
     private LocalDate date;
     private List<SongSessionDto> sessions;
-    private Set<Long> participantIds;
 }
