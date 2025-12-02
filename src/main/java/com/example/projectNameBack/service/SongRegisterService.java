@@ -65,17 +65,6 @@ public class SongRegisterService {
             });
         }
 
-        // 참여자 추가 로직
-        if (dto.getParticipantIds() != null) {
-            Set<User> participants = new HashSet<>();
-            dto.getParticipantIds().forEach(userId -> {
-                User user = userLoginInfoRepository.findById(userId)
-                        .orElseThrow(() -> new IllegalArgumentException("User not found: " + userId));
-                participants.add(user);
-            });
-            songRegister.setParticipants(participants);
-        }
-
         return songRegisterRepository.save(songRegister);
     }
 
@@ -109,20 +98,6 @@ public class SongRegisterService {
                 songRegister.getSessions().add(session);
             });
         }
-
-        // 참여자 업데이트
-        if (dto.getParticipantIds() != null) {
-            Set<User> participants = new HashSet<>();
-            dto.getParticipantIds().forEach(userId -> {
-                User user = userLoginInfoRepository.findById(userId)
-                        .orElseThrow(() -> new IllegalArgumentException("User not found: " + userId));
-                participants.add(user);
-            });
-            songRegister.setParticipants(participants);
-        } else {
-            songRegister.getParticipants().clear();
-        }
-
         songRegisterRepository.save(songRegister);
     }
 
@@ -130,7 +105,6 @@ public class SongRegisterService {
     public void deleteSong(Long id) {
         SongRegister songRegister = songRegisterRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 노래 신청을 찾을 수 없습니다. id=" + id));
-        songRegister.getParticipants().clear();
         songRegisterRepository.delete(songRegister);
     }
 }

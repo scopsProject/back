@@ -29,12 +29,4 @@ public class SongRegister {
 
     @OneToMany(mappedBy = "songRegister", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SongSession> sessions = new ArrayList<>();
-
-    @ManyToMany
-    @JoinTable(
-            name = "song_register_users",
-            joinColumns = @JoinColumn(name = "song_register_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id")
-    )
-    private Set<User> participants = new HashSet<>();
 }

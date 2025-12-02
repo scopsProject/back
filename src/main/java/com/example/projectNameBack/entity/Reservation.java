@@ -21,7 +21,7 @@ public class Reservation {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "event_id")
-    private Event event; // String eventName 대신 이거 사용!
+    private Event event;
     private String singerName;
     private String songName;
 
