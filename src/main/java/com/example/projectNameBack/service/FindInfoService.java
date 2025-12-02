@@ -9,7 +9,9 @@ import com.example.projectNameBack.repository.UserLoginInfoRepository;
 import org.springframework.stereotype.Service;
 import jakarta.transaction.Transactional;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -144,9 +146,9 @@ public class FindInfoService {
     // 6. 예약하기 (가장 중요!)
     @Transactional
     public void reserveSong(ReservationRequestDto dto) {
+        validateReservationTime();
 
         System.out.println("=== 예약 요청 DTO 확인 ===");
-        // ... 로그 생략 ...
 
         List<Reservation> overlapped = reservationRepository.findOverlappingReservations(
                 dto.getDate(),
@@ -190,5 +192,29 @@ public class FindInfoService {
 
         reservationRepository.save(reservation);
         sseService.broadcast(dto);
+    }
+    private void validateReservationTime() {
+        LocalDateTime now = LocalDateTime.now(); // 서버의 현재 시간
+        DayOfWeek day = now.getDayOfWeek();
+        int hour = now.getHour();
+
+        boolean isOpen = false;
+
+        // 화요일: 9시 이후부터
+        if (day == DayOfWeek.TUESDAY) {
+            if (hour >= 9) isOpen = true;
+        }
+        // 수요일: 하루 종일 가능
+        else if (day == DayOfWeek.WEDNESDAY) {
+            isOpen = true;
+        }
+        // 목요일: 19시 이전까지 (18:59:59 까지)
+        else if (day == DayOfWeek.THURSDAY) {
+            if (hour < 19) isOpen = true;
+        }
+
+        if (!isOpen) {
+            throw new IllegalStateException("예약 가능한 시간이 아닙니다.\n(화 09:00 ~ 목 19:00)");
+        }
     }
 }
