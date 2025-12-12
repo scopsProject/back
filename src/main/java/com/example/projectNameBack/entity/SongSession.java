@@ -1,5 +1,6 @@
 package com.example.projectNameBack.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -19,5 +20,6 @@ public class SongSession {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "song_register_id")
+    @JsonIgnore
     private SongRegister songRegister;
 }
