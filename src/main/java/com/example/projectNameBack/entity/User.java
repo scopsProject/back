@@ -1,5 +1,6 @@
 package com.example.projectNameBack.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -28,9 +29,11 @@ public class User {
 
     // 🔥 유저는 여러 예약을 가질 수 있음 (1:N)
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Reservation> reservations = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private List<TimeTable> timeTables = new ArrayList<>();
 
     public User(String userName, int userYear, String session, String userID, String userPassword, String role) {
