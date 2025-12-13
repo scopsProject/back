@@ -34,7 +34,6 @@ public class AdminController {
     // 3. 회원 가입 거절 처리
     @DeleteMapping("/reject/{userID}")
     public ResponseEntity<String> rejectUser(@PathVariable String userID) {
-        log.info("🎉 [Controller Reached] DELETE Request for UserID: {}", userID);
         adminService.rejectUser(userID);
         return ResponseEntity.ok("거절(삭제) 완료: " + userID);
     }

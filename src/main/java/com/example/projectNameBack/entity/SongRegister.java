@@ -29,4 +29,7 @@ public class SongRegister {
 
     @OneToMany(mappedBy = "songRegister", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SongSession> sessions = new ArrayList<>();
+
+    @OneToMany(mappedBy = "songRegister", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<Reservation> reservations = new ArrayList<>();
 }
