@@ -130,7 +130,8 @@ public class FindInfoService {
                         u.getUserName(),
                         u.getSession(),
                         u.getRole(),
-                        u.getUserYear()
+                        u.getUserYear(),
+                        u.getStatus().name()
                 ))
                 .toList();
     }

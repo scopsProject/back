@@ -4,6 +4,7 @@ import com.example.projectNameBack.dto.LoginResponseDto;
 import com.example.projectNameBack.dto.SaveUserLoginInfoDto;
 import com.example.projectNameBack.dto.UserInfoDto;
 import com.example.projectNameBack.entity.User;
+import com.example.projectNameBack.entity.UserStatus;
 import com.example.projectNameBack.repository.UserLoginInfoRepository;
 import com.example.projectNameBack.util.JwtUtil; // ⬅️ 이 import는 이미 있습니다.
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -32,27 +33,35 @@ public class AuthService {
     public LoginResponseDto login(String userID, String rawPassword){
         Optional<User> userOpt = userLoginInfoRepository.findByUserID(userID);
 
+        // 1. 유저가 존재하는지 먼저 확인
         if (userOpt.isPresent()) {
-            User user = userOpt.get();
-            System.out.println("DB PW: " + user.getUserPassword());
-            System.out.println("입력 PW: " + rawPassword);
+            User user = userOpt.get(); // 껍데기 벗기기 (User 객체 꺼냄)
 
+            // 2. 비밀번호 확인
             if (passwordEncoder.matches(rawPassword, user.getUserPassword())) {
 
-                // JWT 생성 (userId, userName, role 포함)
+                // 3. ★ 여기서 상태 확인 (비밀번호가 맞은 사람만 상태 체크) ★
+                if (user.getStatus() == UserStatus.PENDING) {
+                    throw new RuntimeException("관리자 승인 대기 중인 계정입니다.");
+                }
+                if (user.getStatus() == UserStatus.REJECTED) {
+                    throw new RuntimeException("가입이 거절된 계정입니다.");
+                }
+
+                // 4. 통과되면 토큰 생성
                 String token = jwtUtil.generateToken(
                         user.getUserID(),
                         user.getUserName(),
                         user.getRole()
                 );
 
-                // 프론트에 내려줄 사용자 정보 DTO
                 UserInfoDto userInfo = new UserInfoDto(
                         user.getUserID(),
                         user.getUserName(),
                         user.getSession(),
                         user.getRole(),
-                        user.getUserYear()
+                        user.getUserYear(),
+                        user.getStatus().name()
                 );
 
                 System.out.println("로그인 성공: " + user.getUserName());
@@ -60,6 +69,7 @@ public class AuthService {
             }
         }
 
+        // 아이디가 없거나 비밀번호가 틀림
         return null;
     }
 
@@ -74,7 +84,8 @@ public class AuthService {
         user.setUserName(saveUserLoginInfoDto.getUserName());
         user.setUserYear(saveUserLoginInfoDto.getUserYear());
         user.setSession(saveUserLoginInfoDto.getSession());
-        user.setRole(saveUserLoginInfoDto.getRole()); // ⬅️ (참고) 권한(role)을 "USER" 등으로 설정하는 것을 권장합니다.
+        user.setRole(saveUserLoginInfoDto.getRole());
+        user.setStatus(UserStatus.PENDING);
         return userLoginInfoRepository.save(user);
     }
 

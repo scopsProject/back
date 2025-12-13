@@ -28,6 +28,8 @@ public class User {
     private String session;
     private String role;
     private int userYear;
+    @Enumerated(EnumType.STRING)
+    private UserStatus status;
 
     // 🔥 유저는 여러 예약을 가질 수 있음 (1:N)
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)

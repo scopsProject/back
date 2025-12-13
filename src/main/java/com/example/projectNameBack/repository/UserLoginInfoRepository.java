@@ -2,6 +2,7 @@ package com.example.projectNameBack.repository;
 
 import com.example.projectNameBack.dto.UserInfoDto;
 import com.example.projectNameBack.entity.User;
+import com.example.projectNameBack.entity.UserStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -26,4 +27,5 @@ public interface UserLoginInfoRepository extends JpaRepository<User, Long> {
     @Query("SELECT u FROM User u")
     List<User> findAllUsers();
     Optional<User> findByUserName(String userName);
+    List<User> findByStatus(UserStatus status);
 }

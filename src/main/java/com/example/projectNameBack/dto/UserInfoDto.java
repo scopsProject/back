@@ -12,4 +12,5 @@ public class UserInfoDto {
     private String session;
     private String role;
     private int userYear;
+    private String status;
 }
