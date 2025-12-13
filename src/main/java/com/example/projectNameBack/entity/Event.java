@@ -22,9 +22,8 @@ public class Event {
     private String eventName;
     private LocalDate createdDate;
     private LocalDate endDate;
-    // mappedBy = "event": SongRegister의 'event' 필드가 주인이라는 뜻
-    // cascade = CascadeType.ALL: Event를 저장/삭제할 때 자식도 똑같이 처리함 (삭제 시 같이 삭제됨)
-    // orphanRemoval = true: 리스트에서 제거되면 DB에서도 삭제됨
+    @Column(columnDefinition = "boolean default false")
+    private boolean isSongRegistrationAvailable;
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SongRegister> songRegisters = new ArrayList<>();
 }

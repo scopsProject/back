@@ -51,4 +51,8 @@ public class EventController {
         log.info("컨트롤러 응답 예정 데이터 개수: {}개", events.size());
         return ResponseEntity.ok(events);
     }
+    @GetMapping("/available")
+    public ResponseEntity<List<String>> getAvailableEvents() {
+        return ResponseEntity.ok(eventService.getAvailableEventNames());
+    }
 }

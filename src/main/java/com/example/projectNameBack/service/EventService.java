@@ -29,11 +29,16 @@ public class EventService {
         event.setEventName(dto.getEventName());
         event.setCreatedDate(dto.getCreatedDate());
         event.setEndDate(dto.getEndDate());
+        event.setSongRegistrationAvailable(dto.isSongRegistrationAvailable());
 
         Event savedEvent = eventRepository.save(event);
         log.info("=== [EventService] DB 저장 완료: ID={}, 이름={} ===", savedEvent.getId(), savedEvent.getEventName());
 
         return savedEvent;
+    }
+    @Transactional(readOnly = true)
+    public List<String> getAvailableEventNames() {
+        return eventRepository.findAvailableEventNames();
     }
 
     @Transactional(readOnly = true)
