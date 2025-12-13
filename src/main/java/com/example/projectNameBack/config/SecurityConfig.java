@@ -39,7 +39,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authz -> authz
                         // 1. 로그인, 회원가입, SSE는 누구나 허용
                         .requestMatchers("/scops/userRegister", "/api/scops/login", "/scops/login", "/sse/subscribe").permitAll()
-
+                        .requestMatchers("/scops/admin/**").authenticated()
                         // 2. [수정] 노래 관련 기능은 '로그인한 사람'만 가능하게 변경
                         .requestMatchers("/songs/**").authenticated()
 

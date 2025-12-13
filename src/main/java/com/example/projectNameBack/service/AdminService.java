@@ -44,4 +44,12 @@ public class AdminService {
 
         user.setStatus(UserStatus.ACTIVE);
     }
+    // 3. 회원가입 거절한거 삭제
+    @Transactional
+    public void rejectUser(String userID) {
+        User user = userLoginInfoRepository.findByUserID(userID)
+                .orElseThrow(() -> new IllegalArgumentException("해당 유저를 찾을 수 없습니다: " + userID));
+
+        userLoginInfoRepository.delete(user); // Repository에 delete 메서드는 기본적으로 있습니다.
+    }
 }
