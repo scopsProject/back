@@ -116,24 +116,19 @@ public class FindInfoService {
         return songRegisterRepository.findBySongName(songName);
     }
 
-    public List<UserInfoDto> getSessions(String myUserId) {
-        // 1. DB에 있는 '모든' 회원 가져오기 (접속 여부와 상관없음!)
-        List<User> allUsers = userLoginInfoRepository.findAll();
+    public List<UserInfoDto> getSessions(String myId) {
+        List<User> users = userLoginInfoRepository.findByUserIDNotAndStatus(myId, UserStatus.ACTIVE);
 
-        return allUsers.stream()
-                // 2. 🔥 [필터링] 내 아이디(myUserId)와 '다른' 사람만 남기기
-                .filter(u -> !u.getUserID().equals(myUserId))
-
-                // 3. DTO로 변환
-                .map(u -> new UserInfoDto(
-                        u.getUserID(), // 🔥 학번도 같이 담아서 보냄
-                        u.getUserName(),
-                        u.getSession(),
-                        u.getRole(),
-                        u.getUserYear(),
-                        u.getStatus().name()
+        return users.stream()
+                .map(user -> new UserInfoDto(
+                        user.getUserID(),
+                        user.getUserName(),
+                        user.getSession(),
+                        user.getRole(),
+                        user.getUserYear(),
+                        user.getStatus().name()
                 ))
-                .toList();
+                .collect(Collectors.toList());
     }
 
     // 5. 월별 예약 조회

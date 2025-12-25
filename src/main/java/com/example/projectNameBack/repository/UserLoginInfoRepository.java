@@ -16,16 +16,23 @@ import java.util.Optional;
 @Repository
 public interface UserLoginInfoRepository extends JpaRepository<User, Long> {
     Optional<User> findByUserID(String userID);
+
     @Transactional
     @Modifying
     @Query("DELETE FROM User u WHERE u.userID = :userID")
     int deleteByUserID(@Param("userID") String userID);
+
     @Transactional
     @Modifying
     @Query(value = "DELETE FROM song_register_users WHERE user_id = :userID", nativeQuery = true)
     int deleteUserFromReservations(@Param("userID") Long userId);
+
     @Query("SELECT u FROM User u")
     List<User> findAllUsers();
+
     Optional<User> findByUserName(String userName);
+
     List<User> findByStatus(UserStatus status);
+
+    List<User> findByUserIDNotAndStatus(String userID, UserStatus status);
 }

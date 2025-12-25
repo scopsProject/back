@@ -65,4 +65,19 @@ public class AdminService {
             throw new IllegalArgumentException("존재하지 않는 권한입니다: " + newRoleStr);
         }
     }
+    // 4. 승인된(ACTIVE) 회원 목록 가져오기 (직위 변경용)
+    public List<UserInfoDto> getActiveUsers(String myId) {
+        List<User> users = userLoginInfoRepository.findByUserIDNotAndStatus(myId, UserStatus.ACTIVE);
+
+        return users.stream()
+                .map(user -> new UserInfoDto(
+                        user.getUserID(),
+                        user.getUserName(),
+                        user.getSession(),
+                        user.getRole(),
+                        user.getUserYear(),
+                        user.getStatus().name()
+                ))
+                .collect(Collectors.toList());
+    }
 }

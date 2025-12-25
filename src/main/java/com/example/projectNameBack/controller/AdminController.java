@@ -6,6 +6,8 @@ import com.example.projectNameBack.entity.User;
 import com.example.projectNameBack.service.AdminService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -38,9 +40,19 @@ public class AdminController {
         adminService.rejectUser(userID);
         return ResponseEntity.ok("거절(삭제) 완료: " + userID);
     }
+    @GetMapping("/active-users")
+    public ResponseEntity<List<UserInfoDto>> getActiveUsers(
+            @AuthenticationPrincipal UserDetails userDetails // 1. 내 정보(관리자 ID) 가져오기
+    ) {
+        String myId = userDetails.getUsername();
+
+        return ResponseEntity.ok(adminService.getActiveUsers(myId));
+    }
+
+    // 5. 권한 변경 API
     @PatchMapping("/update-role/{userID}")
     public ResponseEntity<String> updateUserRole(@PathVariable String userID, @RequestBody RoleUpdateRequest request) {
         adminService.updateUserRole(userID, request.getRole());
-        return ResponseEntity.ok("권한 변경 완료 (" + userID + " -> " + request.getRole() + ")");
+        return ResponseEntity.ok("권한 변경 완료");
     }
 }
