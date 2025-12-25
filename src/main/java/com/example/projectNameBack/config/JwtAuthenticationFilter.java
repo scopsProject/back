@@ -64,7 +64,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     UserDetails userDetails = org.springframework.security.core.userdetails.User
                             .withUsername(userId)
                             .password("") // 필요 없음
-                            .roles(role)  // 🔥 권한 반영
+                            .authorities(role)  // 🔥 권한 반영
                             .build();
 
                     UsernamePasswordAuthenticationToken authToken =
