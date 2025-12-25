@@ -26,7 +26,8 @@ public class User {
     private String userPassword;
     private String userName;
     private String session;
-    private String role;
+    @Enumerated(EnumType.STRING)
+    private UserRole role;
     private int userYear;
     @Enumerated(EnumType.STRING)
     private UserStatus status;
@@ -40,7 +41,7 @@ public class User {
     @JsonIgnore
     private List<TimeTable> timeTables = new ArrayList<>();
 
-    public User(String userName, int userYear, String session, String userID, String userPassword, String role) {
+    public User(String userName, int userYear, String session, String userID, String userPassword, UserRole role) {
         this.userName = userName;
         this.userYear = userYear;
         this.session = session;

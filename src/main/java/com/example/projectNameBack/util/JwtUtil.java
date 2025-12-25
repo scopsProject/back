@@ -1,5 +1,6 @@
 package com.example.projectNameBack.util;
 
+import com.example.projectNameBack.entity.UserRole;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -73,7 +74,7 @@ public class JwtUtil {
 
     // --- (참고) 로그인 성공 시 '토큰 생성' 로직 (로그인 컨트롤러에서 사용) ---
     // (이 메서드는 필요에 따라 수정하세요. 만료 시간 등)
-    public String generateToken(String userId, String userName, String role) {
+    public String generateToken(String userId, String userName, UserRole role) {
         long now = System.currentTimeMillis();
         return Jwts.builder()
                 .setSubject(userId) // ⬅️ 여기에 학번(userId)을 저장

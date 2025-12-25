@@ -1,5 +1,6 @@
 package com.example.projectNameBack.dto;
 
+import com.example.projectNameBack.entity.UserRole;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,7 +11,7 @@ public class UserInfoDto {
     private String userID;
     private String userName;
     private String session;
-    private String role;
+    private UserRole role;
     private int userYear;
     private String status;
 }

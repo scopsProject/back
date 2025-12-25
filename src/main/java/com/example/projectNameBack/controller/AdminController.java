@@ -1,5 +1,6 @@
 package com.example.projectNameBack.controller;
 
+import com.example.projectNameBack.dto.RoleUpdateRequest;
 import com.example.projectNameBack.dto.UserInfoDto;
 import com.example.projectNameBack.entity.User;
 import com.example.projectNameBack.service.AdminService;
@@ -10,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 @Slf4j
 @RestController
-@RequestMapping("/scops/admin") // ⬅️ URL 경로를 프로젝트 규칙에 맞게 설정하세요 (예: /scops/admin)
+@RequestMapping("/scops/admin")
 public class AdminController {
 
     private final AdminService adminService;
@@ -27,7 +28,7 @@ public class AdminController {
 
     // 2. 회원 가입 승인 처리
     @PostMapping("/approve/{userID}")
-    public ResponseEntity<String> approveUser(@PathVariable String userID) { // ⬅️ Long -> String 변경
+    public ResponseEntity<String> approveUser(@PathVariable String userID) {
         adminService.approveUser(userID);
         return ResponseEntity.ok("승인 완료: " + userID);
     }
@@ -36,5 +37,10 @@ public class AdminController {
     public ResponseEntity<String> rejectUser(@PathVariable String userID) {
         adminService.rejectUser(userID);
         return ResponseEntity.ok("거절(삭제) 완료: " + userID);
+    }
+    @PatchMapping("/update-role/{userID}")
+    public ResponseEntity<String> updateUserRole(@PathVariable String userID, @RequestBody RoleUpdateRequest request) {
+        adminService.updateUserRole(userID, request.getRole());
+        return ResponseEntity.ok("권한 변경 완료 (" + userID + " -> " + request.getRole() + ")");
     }
 }

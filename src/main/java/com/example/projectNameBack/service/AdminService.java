@@ -2,6 +2,7 @@ package com.example.projectNameBack.service;
 
 import com.example.projectNameBack.dto.UserInfoDto;
 import com.example.projectNameBack.entity.User;
+import com.example.projectNameBack.entity.UserRole;
 import com.example.projectNameBack.entity.UserStatus;
 import com.example.projectNameBack.repository.UserLoginInfoRepository;
 import org.springframework.stereotype.Service;
@@ -51,5 +52,17 @@ public class AdminService {
                 .orElseThrow(() -> new IllegalArgumentException("해당 유저를 찾을 수 없습니다: " + userID));
 
         userLoginInfoRepository.delete(user); // Repository에 delete 메서드는 기본적으로 있습니다.
+    }
+    @Transactional
+    public void updateUserRole(String userID, String newRoleStr) {
+        User user = userLoginInfoRepository.findByUserID(userID)
+                .orElseThrow(() -> new IllegalArgumentException("해당 유저를 찾을 수 없습니다: " + userID));
+
+        try {
+            UserRole newRole = UserRole.valueOf(newRoleStr.toUpperCase());
+            user.setRole(newRole);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("존재하지 않는 권한입니다: " + newRoleStr);
+        }
     }
 }
