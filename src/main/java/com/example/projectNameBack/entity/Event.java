@@ -15,7 +15,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Event extends BaseTimeEntity{
+public class Event{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

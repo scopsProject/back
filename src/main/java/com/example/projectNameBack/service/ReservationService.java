@@ -54,22 +54,22 @@ public class ReservationService {
     // 3. 예약하기
     @Transactional
     public void reserveSong(ReservationRequestDto dto) {
-        // A. 시간 검증
+        // A. 시간 검증 (실패 시 IllegalStateException 발생 -> 핸들러가 409 처리)
         validateReservationTime();
 
-        // B. 중복 검증 (Guard Clause)
+        // B. 중복 검증 (실패 시 IllegalStateException 발생 -> 핸들러가 409 처리)
         if (!reservationRepository.findOverlappingReservations(dto.getDate(), dto.getStartTime(), dto.getEndTime()).isEmpty()) {
             throw new IllegalStateException("이미 예약된 시간대입니다.");
         }
 
-        // C. 엔티티 조회 (Helper 메서드 활용 추천)
+        // C. 엔티티 조회 (실패 시 IllegalArgumentException 발생 -> 핸들러가 400 처리)
         Event event = eventRepository.findByEventName(dto.getEventName())
                 .orElseThrow(() -> new IllegalArgumentException("행사를 찾을 수 없습니다: " + dto.getEventName()));
 
         User user = userRepository.findByUserName(dto.getUserName())
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다: " + dto.getUserName()));
 
-        // D. 예약 생성 (빌더 패턴 권장)
+        // D. 예약 생성
         Reservation reservation = new Reservation();
         reservation.setEvent(event);
         reservation.setUser(user);
@@ -79,7 +79,6 @@ public class ReservationService {
         reservation.setStartTime(dto.getStartTime().withSecond(0).withNano(0));
         reservation.setEndTime(dto.getEndTime().withSecond(0).withNano(0));
 
-        // 곡 등록 정보 연결 (Optional)
         if (dto.getSongRegisterId() != null) {
             SongRegister songRegister = songRepository.findById(dto.getSongRegisterId())
                     .orElseThrow(() -> new IllegalArgumentException("곡 정보를 찾을 수 없습니다."));
@@ -93,13 +92,13 @@ public class ReservationService {
         sseService.broadcast(dto);
     }
 
-    // 4. 예약 시간 검증 (로직 단순화)
+    // 4. 예약 시간 검증
     private void validateReservationTime() {
         LocalDateTime now = LocalDateTime.now();
         DayOfWeek day = now.getDayOfWeek();
         int hour = now.getHour();
 
-        // 예약 가능 여부 판단
+        // 예약 가능: 화(09시~) ~ 수(종일) ~ 목(~19시)
         boolean isTuesdayOpen = (day == DayOfWeek.TUESDAY && hour >= 9);
         boolean isWednesdayOpen = (day == DayOfWeek.WEDNESDAY);
         boolean isThursdayOpen = (day == DayOfWeek.THURSDAY && hour < 19);

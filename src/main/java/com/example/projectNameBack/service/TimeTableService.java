@@ -23,9 +23,8 @@ public class TimeTableService {
     public TimeTable addTimeTable(String userId, TimeTableDto dto) {
         User user = findUserByUserID(userId);
 
-        validateOverlap(user.getId(), dto); // 중복 검사 로직 분리
+        validateOverlap(user.getId(), dto);
 
-        // DTO -> Entity 변환 (깔끔!)
         TimeTable timeTable = dto.toEntity(user);
 
         log.info("시간표 추가: {} ({})", dto.getTitle(), userId);
@@ -37,14 +36,13 @@ public class TimeTableService {
         User user = findUserByUserID(userId);
 
         return user.getTimeTables().stream()
-                .map(TimeTableDto::from) // Entity -> DTO 변환 (메서드 참조)
+                .map(TimeTableDto::from)
                 .collect(Collectors.toList());
     }
     @Transactional
     public void updateTimeTable(Long id, String userId, TimeTableDto dto) {
-        TimeTable timeTable = findTimeTableWithOwnership(id, userId); // 조회 + 권한 체크
+        TimeTable timeTable = findTimeTableWithOwnership(id, userId);
 
-        // 수정 시 중복 검사 (내 ID 제외)
         boolean isOverlapped = timeTableRepository.existsOverlapForUpdate(
                 timeTable.getUser().getId(),
                 id,
@@ -57,7 +55,6 @@ public class TimeTableService {
             throw new IllegalArgumentException("수정하려는 시간에 이미 일정이 존재합니다.");
         }
 
-        // Entity에게 수정 요청 (Setter 나열 X)
         timeTable.updateInfo(
                 dto.getTitle(), dto.getMemo(), dto.getDayOfWeek(),
                 dto.getStartTime(), dto.getEndTime()

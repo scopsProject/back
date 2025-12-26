@@ -21,7 +21,7 @@ public class TimeTableController {
     @PostMapping("/scops/timetable")
     public ResponseEntity<?> addTimeTable(
             @RequestBody TimeTableDto dto,
-            @AuthenticationPrincipal UserDetails userDetails // 토큰에서 유저 정보 획득
+            @AuthenticationPrincipal UserDetails userDetails
     ) {
         try {
             timeTableService.addTimeTable(userDetails.getUsername(), dto);
