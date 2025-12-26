@@ -44,6 +44,7 @@ public class SongService {
     @Transactional
     public SongRegister saveSongRegister(SongRegisterDto dto) {
         SongRegister songRegister = new SongRegister();
+        songRegister.setUserName(dto.getUserName());
         updateSongData(songRegister, dto); // 공통 로직 분리 활용
 
         // 날짜가 없으면 오늘 날짜로 설정
@@ -88,7 +89,6 @@ public class SongService {
         songRegister.setEvent(event);
         songRegister.setSongName(dto.getSongName());
         songRegister.setSingerName(dto.getSingerName());
-        songRegister.setUserName(dto.getUserName());
 
         if (dto.getDate() != null) {
             songRegister.setDate(dto.getDate());
