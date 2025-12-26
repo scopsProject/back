@@ -11,7 +11,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 @Service
 public class SseService {
 
-    // 🔥 명단 관리는 오직 서비스에서만 합니다!
     private final List<SseEmitter> emitters = new CopyOnWriteArrayList<>();
 
     public SseEmitter subscribe() {

@@ -1,5 +1,6 @@
 package com.example.projectNameBack.dto;
 
+import com.example.projectNameBack.entity.User; // 🔥 [핵심] 이 줄이 빠져서 에러가 났을 겁니다!
 import com.example.projectNameBack.entity.UserRole;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,4 +15,15 @@ public class UserInfoDto {
     private UserRole role;
     private int userYear;
     private String status;
+
+    public static UserInfoDto from(User user) {
+        return new UserInfoDto(
+                user.getUserID(),
+                user.getUserName(),
+                user.getSession(),
+                user.getRole(),
+                user.getUserYear(),
+                user.getStatus().name()
+        );
+    }
 }

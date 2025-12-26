@@ -24,9 +24,6 @@ public class TimeTableController {
             @AuthenticationPrincipal UserDetails userDetails // 토큰에서 유저 정보 획득
     ) {
         try {
-            // userDetails.getUsername()은 학번(userID)일 수 있으니 확인 필요
-            // 만약 토큰에 'name' claim이 있다면 그걸 써야 함.
-            // 여기서는 간단히 UserDetails에서 꺼낸 ID로 유저를 찾는다고 가정.
             timeTableService.addTimeTable(userDetails.getUsername(), dto);
             return ResponseEntity.ok("시간표 추가 성공");
         } catch (Exception e) {
@@ -42,7 +39,7 @@ public class TimeTableController {
         return ResponseEntity.ok(timeTables);
     }
     // ...
-    @PutMapping("/timetables/{id}") // 주소 주의 (/scops/timetable/{id} 라면 수정 필요)
+    @PutMapping("/timetables/{id}")
     public ResponseEntity<?> updateTimeTable(
             @PathVariable Long id,
             @RequestBody TimeTableDto dto,
@@ -68,8 +65,6 @@ public class TimeTableController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-    // 🔥 [추가] 다른 사람(친구) 시간표 조회 API
-    // /timetables/user/{userId}
     @GetMapping("/timetables/user/{userId}")
     public ResponseEntity<List<TimeTableDto>> getFriendTimeTable(
             @PathVariable String userId

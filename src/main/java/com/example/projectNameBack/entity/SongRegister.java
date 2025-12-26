@@ -32,4 +32,9 @@ public class SongRegister {
 
     @OneToMany(mappedBy = "songRegister", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Reservation> reservations = new ArrayList<>();
+
+    public void addSession(SongSession session) {
+        this.sessions.add(session);
+        session.setSongRegister(this);
+    }
 }

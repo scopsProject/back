@@ -26,14 +26,7 @@ public class AdminService {
 
         // User 엔티티 리스트를 UserInfoDto 리스트로 변환
         return users.stream()
-                .map(user -> new UserInfoDto(
-                        user.getUserID(),
-                        user.getUserName(),
-                        user.getSession(),
-                        user.getRole(),
-                        user.getUserYear(),
-                        user.getStatus().name() // Enum을 String으로 변환
-                ))
+                .map(UserInfoDto::from)
                 .collect(Collectors.toList());
     }
 
@@ -70,14 +63,7 @@ public class AdminService {
         List<User> users = userLoginInfoRepository.findByUserIDNotAndStatus(myId, UserStatus.ACTIVE);
 
         return users.stream()
-                .map(user -> new UserInfoDto(
-                        user.getUserID(),
-                        user.getUserName(),
-                        user.getSession(),
-                        user.getRole(),
-                        user.getUserYear(),
-                        user.getStatus().name()
-                ))
+                .map(UserInfoDto::from)
                 .collect(Collectors.toList());
     }
 }

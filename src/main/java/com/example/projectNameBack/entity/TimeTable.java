@@ -33,4 +33,12 @@ public class TimeTable {
     @JoinColumn(name = "user_id")
     @JsonIgnore
     private User user;
+
+    public void updateInfo(String title, String memo, DayOfWeek day, LocalTime start, LocalTime end) {
+        this.title = title;
+        this.memo = memo;
+        this.dayOfWeek = day;
+        this.startTime = start;
+        this.endTime = end;
+    }
 }

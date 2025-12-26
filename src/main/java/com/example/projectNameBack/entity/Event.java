@@ -15,12 +15,12 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Event {
+public class Event extends BaseTimeEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String eventName;
-    private LocalDate createdDate;
+    private LocalDate startDate;
     private LocalDate endDate;
     @Column(columnDefinition = "boolean default false")
     private boolean isSongRegistrationAvailable;

@@ -4,6 +4,7 @@ import com.example.projectNameBack.dto.RoleUpdateRequest;
 import com.example.projectNameBack.dto.UserInfoDto;
 import com.example.projectNameBack.entity.User;
 import com.example.projectNameBack.service.AdminService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -13,14 +14,11 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 @Slf4j
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/scops/admin")
 public class AdminController {
 
     private final AdminService adminService;
-
-    public AdminController(AdminService adminService) {
-        this.adminService = adminService;
-    }
 
     // 1. 승인 대기중인 회원 목록 조회
     @GetMapping("/pending-users")

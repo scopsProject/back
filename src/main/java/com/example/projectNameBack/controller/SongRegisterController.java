@@ -5,8 +5,11 @@ import com.example.projectNameBack.dto.ReservationRequestDto;
 import com.example.projectNameBack.dto.SongRegisterDto;
 import com.example.projectNameBack.dto.UserInfoDto;
 import com.example.projectNameBack.entity.SongRegister;
-import com.example.projectNameBack.service.FindInfoService;
+import com.example.projectNameBack.service.AuthService;
+import com.example.projectNameBack.service.ReservationService;
 import com.example.projectNameBack.service.SongRegisterService;
+import com.example.projectNameBack.service.SongService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,17 +19,14 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
-
+@RequiredArgsConstructor
 @RestController
 public class SongRegisterController {
 
     private final SongRegisterService songRegisterService;
-    private final FindInfoService findInfoService;
-
-    public SongRegisterController(SongRegisterService songRegisterService, FindInfoService findInfoService) {
-        this.songRegisterService = songRegisterService;
-        this.findInfoService = findInfoService;
-    }
+    private final SongService songService;
+    private final ReservationService reservationService;
+    private final AuthService authService;
 
     @PostMapping("/songs")
     public ResponseEntity<?> registerSong(@RequestBody SongRegisterDto dto) {
@@ -41,20 +41,20 @@ public class SongRegisterController {
     // 이벤트 이름으로 곡 조회
     @GetMapping("/songs/by-event")
     public List<SongRegisterDto> getSongsByEvent(@RequestParam String eventName) {
-        return findInfoService.getSongsByEvent(eventName);
+        return songService.getSongsByEvent(eventName);
     }
 
     // 등록된 이벤트 이름만 가져오기
     @GetMapping("/songs/events")
     public List<String> getEventNames() {
-        return findInfoService.getEventNames();
+        return songService.getEventNames();
     }
 
     // 곡 예약
     @PostMapping("/songs/reservation")
     public ResponseEntity<?> reservationSong(@RequestBody ReservationRequestDto requestDto) {
         try {
-            findInfoService.reserveSong(requestDto);
+            reservationService.reserveSong(requestDto);
             return ResponseEntity.ok("예약이 완료되었습니다.");
         } catch (IllegalStateException e) {
             // 🔥 시간 겹침 등 논리적 예약 실패 → 409 반환
@@ -70,7 +70,7 @@ public class SongRegisterController {
             @RequestParam("start") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate start,
             @RequestParam("end") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate end) {
         System.out.println("getSongsByWeek 호출됨, start=" + start + ", end=" + end);
-        return findInfoService.getReservationsByDateRange(start, end);
+        return reservationService.getReservationsByDateRange(start, end);
     }
     @GetMapping("/scops/sessions")
     public ResponseEntity<List<UserInfoDto>> getSessions(
@@ -80,7 +80,7 @@ public class SongRegisterController {
         String myId = userDetails.getUsername();
 
         // 2. 서비스에 "내 ID(myId) 빼고 친구들 리스트 줘" 라고 요청
-        List<UserInfoDto> sessions = findInfoService.getSessions(myId);
+        List<UserInfoDto> sessions = authService.getSessions(myId);
 
         return ResponseEntity.ok(sessions);
     }
@@ -88,7 +88,7 @@ public class SongRegisterController {
     public List<ReservationDto> getMonthlyReservations(@RequestParam String start, @RequestParam String end) {
         LocalDate startDate = LocalDate.parse(start);
         LocalDate endDate = LocalDate.parse(end);
-        return findInfoService.getReservationsForMonth(startDate, endDate);
+        return reservationService.getReservationsForMonth(startDate, endDate);
     }
     @PutMapping("/songs/update/{id}")
     public ResponseEntity<?> updateSong(
@@ -103,10 +103,6 @@ public class SongRegisterController {
                     .body("수정 실패: " + e.getMessage());
         }
     }
-
-    /* -------------------------------------------------------
-     * 6. 곡 삭제
-     * ------------------------------------------------------- */
     @DeleteMapping("/songs/delete/{id}")
     public ResponseEntity<?> deleteSong(@PathVariable Long id) {
         try {
