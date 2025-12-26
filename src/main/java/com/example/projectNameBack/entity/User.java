@@ -14,7 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class User extends BaseTimeEntity{
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
