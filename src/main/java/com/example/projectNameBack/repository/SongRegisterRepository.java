@@ -12,7 +12,4 @@ import java.util.List;
 @Repository
 public interface SongRegisterRepository extends JpaRepository <SongRegister, Long> {
     List<SongRegister> findByEvent_EventName(String eventName);
-
-    @Query("SELECT s FROM SongRegister s WHERE s.songName = :songName")
-    List<SongRegister> findBySongName(@Param("songName") String songName);
 }
