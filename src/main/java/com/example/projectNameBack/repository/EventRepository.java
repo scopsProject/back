@@ -12,7 +12,7 @@ import java.util.Optional;
 public interface EventRepository extends JpaRepository<Event, Long> {
     Optional<Event> findByEventName(String eventName);
 
-    @Query("SELECT e FROM Event e WHERE e.endDate >= :start AND e.createdDate <= :end")
+    @Query("SELECT e FROM Event e WHERE e.endDate >= :start AND e.startDate <= :end")
     List<Event> findEventsByPeriod(@Param("start") LocalDate start, @Param("end") LocalDate end);
 
     @Query("SELECT e.eventName FROM Event e WHERE e.isSongRegistrationAvailable = true")

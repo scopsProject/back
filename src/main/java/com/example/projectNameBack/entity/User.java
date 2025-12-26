@@ -22,7 +22,6 @@ public class User {
 
     @Column(unique = true)
     private String userID; // 로그인 ID
-
     private String userPassword;
     private String userName;
     private String session;
