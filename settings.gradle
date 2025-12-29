@@ -1,1 +1,10 @@
+pluginManagement {
+    repositories {
+
+        // 플러그인을 찾을 때 Maven Central을 가장 먼저 뒤지도록 설정합니다.
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+
 rootProject.name = 'projectNameBack'
