@@ -81,7 +81,7 @@ public class JwtUtil {
                 .claim("name", userName) // 🔥 사용자 이름 추가
                 .claim("role", role)
                 .setIssuedAt(new Date(now))
-                .setExpiration(new Date(now + 1000 * 60 * 60 * 24)) // 예: 24시간 후 만료
+                .setExpiration(new Date(now + 1000 * 60 * 60)) // 1시간 후 만료
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }

@@ -1158,7 +1158,7 @@ sys|schema||mysql.sys|localhost|TRIGGER|G</Grants>
     <schema id="291" parent="1" name="scops">
       <AutoIntrospectionLevel>3</AutoIntrospectionLevel>
       <LastIntrospectionLevel>3</LastIntrospectionLevel>
-      <LastIntrospectionLocalTimestamp>2025-12-13.02:43:36</LastIntrospectionLocalTimestamp>
+      <LastIntrospectionLocalTimestamp>2025-12-29.04:38:55</LastIntrospectionLocalTimestamp>
       <CollationName>utf8mb4_0900_ai_ci</CollationName>
     </schema>
     <schema id="292" parent="1" name="sys">
@@ -1220,27 +1220,27 @@ sys|schema||mysql.sys|localhost|TRIGGER|G</Grants>
       <CollationName>utf8mb4_0900_ai_ci</CollationName>
     </table>
     <column id="305" parent="299" name="id">
-      <AutoIncrement>17</AutoIncrement>
+      <AutoIncrement>18</AutoIncrement>
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StoredType>bigint|0s</StoredType>
     </column>
-    <column id="306" parent="299" name="created_date">
+    <column id="306" parent="299" name="end_date">
       <Position>2</Position>
       <StoredType>date|0s</StoredType>
     </column>
-    <column id="307" parent="299" name="end_date">
+    <column id="307" parent="299" name="event_name">
       <Position>3</Position>
-      <StoredType>date|0s</StoredType>
-    </column>
-    <column id="308" parent="299" name="event_name">
-      <Position>4</Position>
       <StoredType>varchar(255)|0s</StoredType>
     </column>
-    <column id="309" parent="299" name="is_song_registration_available">
+    <column id="308" parent="299" name="is_song_registration_available">
       <DefaultExpression>0</DefaultExpression>
-      <Position>5</Position>
+      <Position>4</Position>
       <StoredType>tinyint(1)|0s</StoredType>
+    </column>
+    <column id="309" parent="299" name="start_date">
+      <Position>5</Position>
+      <StoredType>date|0s</StoredType>
     </column>
     <index id="310" parent="299" name="PRIMARY">
       <ColNames>id</ColNames>
@@ -1253,7 +1253,7 @@ sys|schema||mysql.sys|localhost|TRIGGER|G</Grants>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
     <column id="312" parent="300" name="id">
-      <AutoIncrement>34</AutoIncrement>
+      <AutoIncrement>38</AutoIncrement>
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StoredType>bigint|0s</StoredType>
@@ -1328,7 +1328,7 @@ sys|schema||mysql.sys|localhost|TRIGGER|G</Grants>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
     <column id="329" parent="301" name="id">
-      <AutoIncrement>26</AutoIncrement>
+      <AutoIncrement>28</AutoIncrement>
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StoredType>bigint|0s</StoredType>
@@ -1373,7 +1373,7 @@ sys|schema||mysql.sys|localhost|TRIGGER|G</Grants>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
     <column id="339" parent="302" name="id">
-      <AutoIncrement>76</AutoIncrement>
+      <AutoIncrement>87</AutoIncrement>
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StoredType>bigint|0s</StoredType>
@@ -1420,7 +1420,7 @@ sys|schema||mysql.sys|localhost|TRIGGER|G</Grants>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
     <column id="349" parent="303" name="id">
-      <AutoIncrement>8</AutoIncrement>
+      <AutoIncrement>13</AutoIncrement>
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StoredType>bigint|0s</StoredType>
@@ -1469,7 +1469,7 @@ sys|schema||mysql.sys|localhost|TRIGGER|G</Grants>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
     <column id="360" parent="304" name="id">
-      <AutoIncrement>41</AutoIncrement>
+      <AutoIncrement>47</AutoIncrement>
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StoredType>bigint|0s</StoredType>
@@ -1499,22 +1499,26 @@ sys|schema||mysql.sys|localhost|TRIGGER|G</Grants>
       <Position>7</Position>
       <StoredType>int|0s</StoredType>
     </column>
-    <index id="367" parent="304" name="PRIMARY">
+    <column id="367" parent="304" name="status">
+      <Position>8</Position>
+      <StoredType>enum(&apos;ACTIVE&apos;, &apos;PENDING&apos;, &apos;REJECTED&apos;)|0e</StoredType>
+    </column>
+    <index id="368" parent="304" name="PRIMARY">
       <ColNames>id</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <index id="368" parent="304" name="UKcvaouvg098letvsfxhk5282j9">
+    <index id="369" parent="304" name="UKcvaouvg098letvsfxhk5282j9">
       <ColNames>userid</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <key id="369" parent="304" name="PRIMARY">
+    <key id="370" parent="304" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <Primary>1</Primary>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
-    <key id="370" parent="304" name="UKcvaouvg098letvsfxhk5282j9">
+    <key id="371" parent="304" name="UKcvaouvg098letvsfxhk5282j9">
       <UnderlyingIndexName>UKcvaouvg098letvsfxhk5282j9</UnderlyingIndexName>
     </key>
   </database-model>
