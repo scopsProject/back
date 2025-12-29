@@ -1,3 +1,18 @@
 docker-compose.yml
-build/
 *.xml
+
+# --- IntelliJ (IDE 설정 파일 - 공유 금지) ---
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+
+# --- Gradle (빌드 캐시 및 결과물 - 공유 금지) ---
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+
+# --- Java & Mac 기타 시스템 파일 ---
+*.class
+.DS_Store
