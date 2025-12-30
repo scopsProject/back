@@ -61,4 +61,12 @@ public class GlobalExceptionHandler {
         ErrorResponse response = new ErrorResponse("서버 내부 오류가 발생했습니다: " + e.getMessage(), "INTERNAL_SERVER_ERROR");
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
     }
+    // 중복 유저(학번) 예외 처리 -> 409 Conflict
+    @ExceptionHandler(DuplicateUserException.class)
+    public ResponseEntity<ErrorResponse> handleDuplicateUserException(DuplicateUserException e) {
+        log.warn("Duplicate User Error: {}", e.getMessage());
+        // 프론트에서 구분하기 쉽게 에러 코드를 "DUPLICATE_USER"로 설정
+        ErrorResponse response = new ErrorResponse(e.getMessage(), "DUPLICATE_USER");
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+    }
 }

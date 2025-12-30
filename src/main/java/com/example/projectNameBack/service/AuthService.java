@@ -5,6 +5,7 @@ import com.example.projectNameBack.dto.SaveUserLoginInfoDto;
 import com.example.projectNameBack.dto.UserInfoDto;
 import com.example.projectNameBack.entity.User;
 import com.example.projectNameBack.entity.UserStatus;
+import com.example.projectNameBack.exception.DuplicateUserException;
 import com.example.projectNameBack.exception.UnAuthorizedException;
 import com.example.projectNameBack.exception.UserNotFoundException;
 import com.example.projectNameBack.repository.UserLoginInfoRepository;
@@ -58,7 +59,7 @@ public class AuthService {
     public User saveUserInfo(SaveUserLoginInfoDto dto) {
         // 1. 중복 검사 (이미 있으면 400 Bad Request)
         if (userLoginInfoRepository.findByUserID(dto.getUserID()).isPresent()) {
-            throw new IllegalStateException("이미 가입된 학번입니다.");
+            throw new DuplicateUserException("이미 가입된 학번입니다.");
         }
 
         // 2. 유저 생성
