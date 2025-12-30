@@ -1,7 +1,4 @@
 package com.example.projectNameBack.config;
-
-// ⬇️ ‼️ 'JwtUtil'의 경로는 실제 파일 위치에 맞게 수정해야 합니다. ‼️
-
 import com.example.projectNameBack.util.JwtUtil;
 
 import jakarta.servlet.FilterChain;
@@ -20,7 +17,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.Collections;
 
-@Component // ⬅️ ‼️ 이 어노테이션이 있어야 SecurityConfig가 주입(DI)받을 수 있습니다. ‼️
+@Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
@@ -56,15 +53,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             if (jwtUtil.validateToken(jwt)) {
 
                 userId = jwtUtil.getUserIdFromToken(jwt);
-                name = jwtUtil.getNameFromToken(jwt);   // 🔥 추가
-                role = jwtUtil.getRoleFromToken(jwt);   // 🔥 추가
+                name = jwtUtil.getNameFromToken(jwt);
+                role = jwtUtil.getRoleFromToken(jwt);
 
                 if (userId != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
                     UserDetails userDetails = org.springframework.security.core.userdetails.User
                             .withUsername(userId)
                             .password("") // 필요 없음
-                            .authorities(role)  // 🔥 권한 반영
+                            .authorities(role)
                             .build();
 
                     UsernamePasswordAuthenticationToken authToken =

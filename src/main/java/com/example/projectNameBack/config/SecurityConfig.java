@@ -21,6 +21,7 @@ import java.util.List;
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -30,10 +31,10 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable()) // ⬅️ CSRF 끄기
+                .csrf(csrf -> csrf.disable()) //CSRF 끄기
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
 
-                // ⬇️ ‼️ JWT 사용을 위한 Stateless(무상태) 설정 ‼️
+                // JWT 사용을 위한 Stateless(무상태) 설정
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
                 .authorizeHttpRequests(authz -> authz
@@ -46,8 +47,11 @@ public class SecurityConfig {
                         // 3. 나머지도 인증 필요
                         .anyRequest().authenticated()
                 )
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint(jwtAuthenticationEntryPoint) // 401 에러 처리
+                )
 
-                // ⬇️ ‼️ JWT 필터를 Security 필터 체인에 추가 ‼️
+                // JWT 필터를 Security 필터 체인에 추가
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
@@ -57,7 +61,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        // ⬇️ ‼️ 'https://' 주소로 CORS 허용 ‼️
+        // 'https://' 주소로 CORS 허용
         configuration.setAllowedOriginPatterns(List.of(
                 "https://front-a3c.pages.dev",
                 "https://*.front-a3c.pages.dev",
