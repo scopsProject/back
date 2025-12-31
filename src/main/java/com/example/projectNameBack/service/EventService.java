@@ -38,7 +38,7 @@ public class EventService {
         return savedEvent;
     }
 
-    // 2. 신청 가능한 행사 이름 목록 조회
+    // 2. 곡등록 가능한 행사 이름 목록 조회
     @Transactional(readOnly = true)
     public List<String> getAvailableEventNames() {
         return eventRepository.findAvailableEventNames();

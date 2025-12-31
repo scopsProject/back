@@ -27,12 +27,13 @@ public class EventController {
 
         return ResponseEntity.ok(eventService.createEvent(dto));
     }
+    // 2. 모든 행사 조회
     @GetMapping("/names/all")
     public ResponseEntity<List<String>> getAllEventNames() {
         return ResponseEntity.ok(eventService.getAllEventNames());
     }
 
-    // 2. 기간별 행사 조회
+    // 3. 기간별 행사 조회
     @GetMapping("/period")
     public ResponseEntity<List<Event>> getEventsByPeriod(
             @RequestParam("start") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate start,
@@ -43,7 +44,7 @@ public class EventController {
         return ResponseEntity.ok(eventService.getEventsByPeriod(start, end));
     }
 
-    // 3. 현재 신청 가능한 행사 목록
+    // 4. 곡 등록 가능한 행사 목록 조회
     @GetMapping("/available")
     public ResponseEntity<List<String>> getAvailableEvents() {
         return ResponseEntity.ok(eventService.getAvailableEventNames());
