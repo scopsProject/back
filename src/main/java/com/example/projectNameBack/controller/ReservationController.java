@@ -44,33 +44,32 @@ public class ReservationController {
         return reservationService.getReservationsForMonth(start, end);
     }
     // 4. 예약 취소(삭제)
+    // ReservationController.java
+
+    // 4. 예약 취소(삭제)
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteReservation(
             @PathVariable Long id,
             @AuthenticationPrincipal Object principal
     ) {
-        System.out.println("=== 삭제 요청 도착! ID: " + id + " ===");
-        System.out.println("=== Principal 타입: " + principal.getClass().getName() + " ===");
-        System.out.println("=== Principal 값: " + principal + " ===");
-        String currentUserName = null;
+        String currentUserId = null;
 
-        // 2. Principal 타입에 따라 이름 꺼내기
+        // Principal 타입에 따라 로그인 ID(userID, 학번 등) 추출
         if (principal instanceof User) {
-            // Case A: Principal이 User 엔티티인 경우 (CustomUserDetailsService 사용 시)
-            currentUserName = ((User) principal).getUserName();
+            // Case A: 커스텀 User 엔티티인 경우 -> getUserID() 호출
+            currentUserId = ((User) principal).getUserID();
         } else if (principal instanceof org.springframework.security.core.userdetails.UserDetails) {
-            // Case B: 일반 UserDetails인 경우 (주의: getUsername()은 보통 ID입니다. 이름이 필요하면 확인 필요)
-            // UserDetails에는 실명(userName) 필드가 없을 수 있으므로 확인이 필요합니다.
-            // 만약 UserDetails 구현체에 실명이 없다면 ID를 넘겨서 Service에서 다시 조회해야 합니다.
-            currentUserName = ((org.springframework.security.core.userdetails.UserDetails) principal).getUsername();
+            // Case B: 스프링 시큐리티 기본 UserDetails인 경우
+            // -> getUsername()이 로그인할 때 쓴 ID(학번)를 반환함
+            currentUserId = ((org.springframework.security.core.userdetails.UserDetails) principal).getUsername();
         } else {
-            // Case C: String으로 들어오는 경우
-            currentUserName = principal.toString();
+            // Case C: String이나 기타 타입인 경우
+            currentUserId = principal.toString();
         }
 
-        System.out.println("=== 추출된 사용자 이름: " + currentUserName + " ===");
+        // 서비스로 ID("2000")를 넘김
+        reservationService.cancelReservation(id, currentUserId);
 
-        reservationService.cancelReservation(id, currentUserName);
         return ResponseEntity.ok("예약이 취소되었습니다.");
     }
 }

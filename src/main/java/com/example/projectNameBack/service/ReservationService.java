@@ -111,21 +111,20 @@ public class ReservationService {
     }
     // 5. 예약 취소 (삭제)
     @Transactional
-    public void cancelReservation(Long reservationId, String currentUserName) {
+    public void cancelReservation(Long reservationId, String currentUserId) {
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new EntityNotFoundException("예약 정보를 찾을 수 없습니다."));
 
-        // [중요 수정] reservation.getUser()는 객체이므로 String과 비교하면 항상 false입니다.
-        // getUser().getUserName() (또는 ID)으로 비교해야 합니다.
-        String ownerName = reservation.getUser().getUserName();
+        // DB에 저장된 예약자의 로그인 ID(학번/사번)를 가져옵니다.
+        String ownerUserId = reservation.getUser().getUserID();
 
-        // 관리자 권한 체크 로직이 필요하다면 여기서 추가 (예: currentRole 체크)
-
-        if (!ownerName.equals(currentUserName)) {
+        // 토큰에서 추출한 ID(currentUserId)와 DB의 예약자 ID(ownerUserId)가 다르면 예외 발생
+        if (!ownerUserId.equals(currentUserId)) {
             throw new AccessDeniedException("본인의 예약만 취소할 수 있습니다.");
         }
 
         reservationRepository.delete(reservation);
-        log.info("예약 취소 성공: ID {}, 요청자 {}", reservationId, currentUserName);
+        // 필요한 최소한의 감사(Audit) 로그만 남깁니다.
+        log.info("예약 삭제 완료 - 예약ID: {}, 요청자ID: {}", reservationId, currentUserId);
     }
 }
