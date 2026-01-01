@@ -44,18 +44,11 @@ public class ReservationController {
     }
     // 4. 예약 취소(삭제)
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteReservation(
+    public ResponseEntity<String> deleteReservation(
             @PathVariable Long id,
-            @AuthenticationPrincipal String currentUserName // 또는 SecurityContextHolder에서 가져오기
+            @AuthenticationPrincipal String currentUserName
     ) {
-        try {
-            // 서비스에서 ID와 현재 접속자 이름을 비교하여 삭제 로직 수행
-            reservationService.cancelReservation(id, currentUserName);
-            return ResponseEntity.ok("예약이 취소되었습니다.");
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("삭제 중 오류가 발생했습니다.");
-        }
+        reservationService.cancelReservation(id, currentUserName);
+        return ResponseEntity.ok("예약이 취소되었습니다.");
     }
 }

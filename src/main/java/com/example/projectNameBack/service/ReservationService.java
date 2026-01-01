@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import org.springframework.security.access.AccessDeniedException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -109,16 +110,22 @@ public class ReservationService {
         }
     }
     // 5. 예약 취소 (삭제)
+    @Transactional
     public void cancelReservation(Long reservationId, String currentUserName) {
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new EntityNotFoundException("예약 정보를 찾을 수 없습니다."));
 
-        // 관리자("ROLE_ADMIN")라면 패스하는 로직을 추가해도 됩니다.
-        // 여기서는 본인 확인만 진행합니다.
-        if (!reservation.getUser().equals(currentUserName)) {
-            throw new IllegalArgumentException("본인의 예약만 취소할 수 있습니다.");
+        // [중요 수정] reservation.getUser()는 객체이므로 String과 비교하면 항상 false입니다.
+        // getUser().getUserName() (또는 ID)으로 비교해야 합니다.
+        String ownerName = reservation.getUser().getUserName();
+
+        // 관리자 권한 체크 로직이 필요하다면 여기서 추가 (예: currentRole 체크)
+
+        if (!ownerName.equals(currentUserName)) {
+            throw new AccessDeniedException("본인의 예약만 취소할 수 있습니다.");
         }
 
         reservationRepository.delete(reservation);
+        log.info("예약 취소 성공: ID {}, 요청자 {}", reservationId, currentUserName);
     }
 }
