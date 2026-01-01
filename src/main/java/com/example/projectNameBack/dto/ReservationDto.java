@@ -22,6 +22,7 @@ public class ReservationDto {
     private String songName;
     private String singerName;
     private List<SongSessionDto> sessions;
+    private String userName;
 
     public static ReservationDto fromEntity(Reservation entity) {
         return ReservationDto.builder()
@@ -32,6 +33,7 @@ public class ReservationDto {
                 .songName(entity.getSongName())
                 .singerName(entity.getSingerName())
                 .eventName(entity.getEvent() != null ? entity.getEvent().getEventName() : null)
+                .userName(entity.getUser().getUserName())
                 .sessions(entity.getSongRegister() != null ?
                         entity.getSongRegister().getSessions().stream()
                                 .map(session -> new SongSessionDto(
@@ -43,7 +45,5 @@ public class ReservationDto {
                         : List.of())
                 .build();
     }
-
-
 }
 
