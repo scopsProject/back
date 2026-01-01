@@ -66,6 +66,14 @@ public class AdminService {
                 .map(UserInfoDto::from)
                 .collect(Collectors.toList());
     }
+    // 6. 강제 탈퇴 로직
+    @Transactional
+    public void forceWithdrawal(String userId) {
+        // 1. 유저 찾기 (userId는 학번/로그인ID)
+        User user = findUserByUserID(userId);
+        // 2. 삭제 (DB에서 완전히 제거)
+        userLoginInfoRepository.delete(user);
+    }
 
     private User findUserByUserID(String userID) {
         return userLoginInfoRepository.findByUserID(userID)

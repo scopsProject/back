@@ -53,4 +53,14 @@ public class AdminController {
         adminService.updateUserRole(userID, request.getRole());
         return ResponseEntity.ok("권한 변경 완료");
     }
+
+    // 6. 강제 탈퇴
+    @DeleteMapping("/force-withdrawal/{userId}")
+    public ResponseEntity<String> forceWithdrawal(@PathVariable String userId) {
+        System.out.println(">>> 강제 탈퇴 요청 도착! 대상 ID: " + userId); // 로그 확인용
+
+        adminService.forceWithdrawal(userId);
+
+        return ResponseEntity.ok("강제 탈퇴 처리가 완료되었습니다.");
+    }
 }
