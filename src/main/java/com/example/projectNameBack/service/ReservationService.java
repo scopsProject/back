@@ -10,6 +10,7 @@ import com.example.projectNameBack.repository.EventRepository;
 import com.example.projectNameBack.repository.ReservationRepository;
 import com.example.projectNameBack.repository.SongRegisterRepository;
 import com.example.projectNameBack.repository.UserLoginInfoRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -106,5 +107,18 @@ public class ReservationService {
         if (!isTuesdayOpen && !isWednesdayOpen && !isThursdayOpen) {
             throw new IllegalStateException("예약 가능한 시간이 아닙니다. (화 09:00 ~ 목 19:00)");
         }
+    }
+    // 5. 예약 취소 (삭제)
+    public void cancelReservation(Long reservationId, String currentUserName) {
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new EntityNotFoundException("예약 정보를 찾을 수 없습니다."));
+
+        // 관리자("ROLE_ADMIN")라면 패스하는 로직을 추가해도 됩니다.
+        // 여기서는 본인 확인만 진행합니다.
+        if (!reservation.getUser().equals(currentUserName)) {
+            throw new IllegalArgumentException("본인의 예약만 취소할 수 있습니다.");
+        }
+
+        reservationRepository.delete(reservation);
     }
 }
