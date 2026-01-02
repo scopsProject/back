@@ -1,10 +1,47 @@
+# 1. 공통 설정
+
 spring:
-  profiles:
-    # ????? local ???? ????? ?????.
-    # ??? ???? ???? ??? ? ??? ?????.
-    default: local
-    group:
-      # 'local' ???? ????? 'common' ???? ?? ??????.
-      local: common
-      # 'prod' ???? ????? 'common' ???? ?? ??????.
-      prod: common
+  application:
+    name: scops
+  jackson:
+    time-zone: Asia/Seoul
+  mvc:
+    problemdetails:
+      enabled: true
+
+  # 2. 로컬(Local) 개발용 기본 설정
+
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/scops_db}
+    username: ${SPRING_DATASOURCE_USERNAME:root}
+    password: ${SPRING_DATASOURCE_PASSWORD:1234}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+jwt:
+  secret-key: long_dummy_secret_key_for_local_development_only_1234
+
+# 3. 기타 설정 (Logging, Server)
+server:
+  port: 8080
+
+logging:
+  level:
+    org.hibernate.SQL: debug
+    org.hibernate.type.descriptor.sql.BasicBinder: trace
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: when_authorized
