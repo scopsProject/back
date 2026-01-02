@@ -1,6 +1,6 @@
 docker-compose.yml
 *.xml
-*.yml
+docker-compose-local.yml
 # --- IntelliJ (IDE 설정 파일 - 공유 금지) ---
 .idea/
 *.iws
