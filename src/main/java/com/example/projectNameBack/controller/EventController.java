@@ -23,7 +23,6 @@ public class EventController {
     // 1. 새 행사 등록 (Event -> EventDto)
     @PostMapping("/new")
     public ResponseEntity<EventDto> createEvent(@RequestBody EventRequestDto dto) {
-        log.info("=== [EventController] 새 행사 등록 요청: {} ===", dto.getEventName());
         return ResponseEntity.ok(eventService.createEvent(dto));
     }
 
@@ -39,7 +38,6 @@ public class EventController {
             @RequestParam("start") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate start,
             @RequestParam("end") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate end) {
 
-        log.info("=== [EventController] 기간별 행사 조회 요청 ({} ~ {}) ===", start, end);
         return ResponseEntity.ok(eventService.getEventsByPeriod(start, end));
     }
 
