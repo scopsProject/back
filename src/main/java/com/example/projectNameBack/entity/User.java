@@ -42,7 +42,7 @@ public class User {
     private List<TimeTable> timeTables = new ArrayList<>();
 
     // 3. 합주 세션 (SongSession): 아까 에러났던 부분이라 반드시 추가해야 함!
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "player", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<SongSession> songSessions = new ArrayList<>();
 
