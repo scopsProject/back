@@ -31,14 +31,20 @@ public class User {
     @Enumerated(EnumType.STRING)
     private UserStatus status;
 
-    // 🔥 유저는 여러 예약을 가질 수 있음 (1:N)
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    // 1. 예약 (Reservation): orphanRemoval = true 추가함
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<Reservation> reservations = new ArrayList<>();
 
+    // 2. 시간표 (TimeTable): 기존에 잘 작성됨
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<TimeTable> timeTables = new ArrayList<>();
+
+    // 3. 합주 세션 (SongSession): 아까 에러났던 부분이라 반드시 추가해야 함!
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<SongSession> songSessions = new ArrayList<>();
 
     public User(String userName, int userYear, String session, String userID, String userPassword, UserRole role) {
         this.userName = userName;
