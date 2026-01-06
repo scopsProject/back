@@ -2,6 +2,8 @@ package com.example.projectNameBack.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -37,6 +39,7 @@ public class Reservation {
     // SongRegister (필수 아니면 optional)
     @ManyToOne
     @JoinColumn(name = "song_register_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private SongRegister songRegister;
 }
 
