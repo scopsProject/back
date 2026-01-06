@@ -1,6 +1,7 @@
 package com.example.projectNameBack.dto;
 
 import com.example.projectNameBack.entity.Event;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,6 +18,7 @@ public class EventDto {
     private String eventName;
     private LocalDate startDate;
     private LocalDate endDate;
+    @JsonProperty("isSongRegistrationAvailable")
     private boolean isSongRegistrationAvailable;
 
     public static EventDto fromEntity(Event event) {
