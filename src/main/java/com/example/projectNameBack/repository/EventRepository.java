@@ -15,6 +15,9 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     @Query("SELECT e FROM Event e WHERE e.endDate >= :start AND e.startDate <= :end")
     List<Event> findEventsByPeriod(@Param("start") LocalDate start, @Param("end") LocalDate end);
 
-    @Query("SELECT e.eventName FROM Event e WHERE e.isSongRegistrationAvailable = true")
-    List<String> findAvailableEventNames();
+    @Query("SELECT e.eventName FROM Event e " +
+            "WHERE e.isSongRegistrationAvailable = true " +
+            "AND e.endDate >= :today " +
+            "ORDER BY e.startDate ASC")
+    List<String> findAvailableEventNames(@Param("today") LocalDate today);
 }

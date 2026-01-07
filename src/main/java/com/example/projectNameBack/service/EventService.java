@@ -38,10 +38,12 @@ public class EventService {
         return EventDto.fromEntity(savedEvent);
     }
 
-    // 2. 곡등록 가능한 행사 이름 목록 조회 (String 리스트라 그대로 둠)
+    // 2. 곡등록 가능한 행사 이름 목록 조회
     @Transactional(readOnly = true)
     public List<String> getAvailableEventNames() {
-        return eventRepository.findAvailableEventNames();
+        LocalDate today = LocalDate.now();
+
+        return eventRepository.findAvailableEventNames(today);
     }
 
     // 3. 모든 행사 이름 목록 조회 (String 리스트라 그대로 둠)
