@@ -46,4 +46,25 @@ public class EventController {
     public ResponseEntity<List<String>> getAvailableEvents() {
         return ResponseEntity.ok(eventService.getAvailableEventNames());
     }
+
+    // 5. 모든 행사 조회 (객체 배열 반환)
+    @GetMapping("/all")
+    public ResponseEntity<List<EventDto>> getAllEvents() {
+        return ResponseEntity.ok(eventService.getAllEvents());
+    }
+
+    // 6. 행사 수정
+    @PutMapping("/{id}")
+    public ResponseEntity<EventDto> updateEvent(
+            @PathVariable Long id,
+            @RequestBody EventRequestDto dto) {
+        return ResponseEntity.ok(eventService.updateEvent(id, dto));
+    }
+
+    // 7. 행사 삭제
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteEvent(@PathVariable Long id) {
+        eventService.deleteEvent(id);
+        return ResponseEntity.ok("행사가 삭제되었습니다.");
+    }
 }

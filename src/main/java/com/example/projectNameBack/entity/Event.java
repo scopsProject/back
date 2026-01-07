@@ -23,11 +23,21 @@ public class Event{
     private String eventName;
     private LocalDate startDate;
     private LocalDate endDate;
+
     @Column(columnDefinition = "boolean default false")
     private boolean isSongRegistrationAvailable;
+
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SongRegister> songRegisters = new ArrayList<>();
+
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<Reservation> reservations = new ArrayList<>();
+
+    public void updateEvent(String eventName, LocalDate startDate, LocalDate endDate) {
+        this.eventName = eventName;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        // isSongRegistrationAvailable 수정도 여기서 처리
+    }
 }

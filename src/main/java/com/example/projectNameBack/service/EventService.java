@@ -63,4 +63,36 @@ public class EventService {
                 .map(EventDto::fromEntity)
                 .collect(Collectors.toList());
     }
+
+    // 5. 모든 행사 정보 조회 (DTO 리스트 반환)
+    @Transactional(readOnly = true)
+    public List<EventDto> getAllEvents() {
+        return eventRepository.findAll().stream()
+                .map(EventDto::fromEntity) // Entity -> DTO 변환
+                .collect(Collectors.toList());
+    }
+
+    // 6. 행사 수정
+    @Transactional
+    public EventDto updateEvent(Long id, EventRequestDto dto) {
+        Event event = eventRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("행사를 찾을 수 없습니다. ID: " + id));
+
+        // 수정 (더티 체킹)
+        event.updateEvent(dto.getEventName(), dto.getStartDate(), dto.getEndDate());
+        // 필요 시 event.setSongRegistrationAvailable(dto.isAvailable());
+
+        log.info("행사 수정 완료: ID={}, 이름={}", id, dto.getEventName());
+        return EventDto.fromEntity(event);
+    }
+
+    // 7. 행사 삭제
+    @Transactional
+    public void deleteEvent(Long id) {
+        Event event = eventRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("행사를 찾을 수 없습니다. ID: " + id));
+
+        eventRepository.delete(event);
+        log.info("행사 삭제 완료: ID={}", id);
+    }
 }
