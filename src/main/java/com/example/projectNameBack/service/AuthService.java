@@ -49,13 +49,13 @@ public class AuthService {
         );
 
         UserInfoDto userInfo = UserInfoDto.from(user);
-        log.info("로그인 성공: {}", user.getUserName());
         return new LoginResponseDto(token, userInfo);
     }
 
     @Transactional
     public User saveUserInfo(SaveUserLoginInfoDto dto) {
         if (userLoginInfoRepository.findByUserID(dto.getUserID()).isPresent()) {
+            log.warn("회원가입 실패 (중복된 학번): {}", dto.getUserID());
             throw new DuplicateUserException("이미 가입된 학번입니다.");
         }
 
@@ -68,7 +68,15 @@ public class AuthService {
         user.setRole(dto.getRole());
         user.setStatus(UserStatus.PENDING);
 
-        return userLoginInfoRepository.save(user);
+        User savedUser = userLoginInfoRepository.save(user);
+
+        log.info("신규 회원가입 신청 - 이름: {}, 학번: {}, 기수: {}th, 세션: {}",
+                savedUser.getUserName(),
+                savedUser.getUserID(),
+                savedUser.getUserYear(),
+                savedUser.getSession());
+
+        return savedUser;
     }
 
     // 회원 탈퇴 (본인 요청)

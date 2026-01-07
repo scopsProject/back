@@ -38,7 +38,6 @@ public class ReservationService {
     @Transactional(readOnly = true)
     public List<ReservationDto> getReservationsByDateRange(LocalDate start, LocalDate end) {
         List<Reservation> reservations = reservationRepository.findWithSessionsByDateRange(start, end);
-        log.info("예약 조회 (기간: {} ~ {}): {}건", start, end, reservations.size());
 
         return reservations.stream()
                 .map(ReservationDto::fromEntity)

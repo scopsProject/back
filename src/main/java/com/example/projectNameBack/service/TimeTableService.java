@@ -93,7 +93,6 @@ public class TimeTableService {
                 .orElseThrow(() -> new IllegalArgumentException("해당 시간표를 찾을 수 없습니다."));
 
         if (!timeTable.getUser().getUserID().equals(userId)) {
-            log.warn("권한 없는 수정 시도: User={}, TimeTableId={}", userId, id);
             // 403 Forbidden 처리를 위해 AccessDeniedException 사용
             throw new AccessDeniedException("본인의 시간표만 수정/삭제할 수 있습니다.");
         }

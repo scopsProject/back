@@ -6,12 +6,14 @@ import com.example.projectNameBack.entity.UserRole;
 import com.example.projectNameBack.entity.UserStatus;
 import com.example.projectNameBack.exception.UserNotFoundException;
 import com.example.projectNameBack.repository.UserLoginInfoRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class AdminService {
 
@@ -34,13 +36,19 @@ public class AdminService {
     public void approveUser(String userID) {
         User user = findUserByUserID(userID);
         user.setStatus(UserStatus.ACTIVE);
+
+        log.info("관리자 회원 승인 완료 - 대상: {} ({})", user.getUserName(), userID);
     }
 
     // 3. 회원가입 거절 및 삭제
     @Transactional
     public void rejectUser(String userID) {
         User user = findUserByUserID(userID);
+        String userName = user.getUserName();
+
         userLoginInfoRepository.delete(user);
+
+        log.info("관리자 가입 거절(삭제) 완료 - 대상: {} ({})", userName, userID);
     }
 
     // 4. 권한 변경
@@ -48,9 +56,15 @@ public class AdminService {
     public void updateUserRole(String userID, String newRoleStr) {
         User user = findUserByUserID(userID);
         try {
+            UserRole oldRole = user.getRole();
             UserRole newRole = UserRole.valueOf(newRoleStr.toUpperCase());
             user.setRole(newRole);
+
+            log.info("사용자 권한 변경 - 대상: {} ({}) | 변경: {} -> {}",
+                    user.getUserName(), userID, oldRole, newRole);
+
         } catch (IllegalArgumentException e) {
+            log.warn("권한 변경 실패 (잘못된 Role): {} - 요청값: {}", userID, newRoleStr);
             throw new IllegalArgumentException("존재하지 않는 권한입니다: " + newRoleStr);
         }
     }
@@ -69,8 +83,10 @@ public class AdminService {
         // 1. 유저 찾기
         User user = findUserByUserID(userId);
 
-        // 2. [변경] 삭제 대신 상태를 '탈퇴'로 변경
+        // 2. 삭제 대신 상태를 '탈퇴'로 변경
         user.setStatus(UserStatus.WITHDRAWN);
+
+        log.info("관리자 강제 탈퇴 처리 - 대상: {} ({})", user.getUserName(), userId);
 
         // 보안을 위해 비밀번호나 개인정보를 비워줄 수도 있음
         // user.setUserPassword("");
@@ -78,6 +94,9 @@ public class AdminService {
 
     private User findUserByUserID(String userID) {
         return userLoginInfoRepository.findByUserID(userID)
-                .orElseThrow(() -> new UserNotFoundException("해당 유저를 찾을 수 없습니다: " + userID));
+                .orElseThrow(() -> {
+                    log.warn("관리자 작업 실패: 존재하지 않는 유저 ID ({})", userID);
+                    return new UserNotFoundException("해당 유저를 찾을 수 없습니다: " + userID);
+                });
     }
 }

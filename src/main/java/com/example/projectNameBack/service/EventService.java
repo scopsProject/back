@@ -58,8 +58,6 @@ public class EventService {
     @Transactional(readOnly = true)
     public List<EventDto> getEventsByPeriod(LocalDate start, LocalDate end) {
         List<Event> events = eventRepository.findEventsByPeriod(start, end);
-        log.info("기간별 행사 조회 성공: {}건 (기간: {} ~ {})", events.size(), start, end);
-
         // 리스트의 각 Entity를 DTO로 변환
         return events.stream()
                 .map(EventDto::fromEntity)
