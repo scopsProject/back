@@ -23,7 +23,7 @@ public class SongRegister {
     private String singerName;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "event_id") // DB에는 event_id 컬럼이 생깁니다.
+    @JoinColumn(name = "event_id")
     @JsonIgnore
     private Event event;
 

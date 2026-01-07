@@ -24,7 +24,6 @@ public class AdminService {
     // 1. 대기중인(PENDING) 회원 목록 가져오기
     public List<UserInfoDto> getPendingUsers() {
         List<User> users = userLoginInfoRepository.findByStatus(UserStatus.PENDING);
-
         return users.stream()
                 .map(UserInfoDto::from)
                 .collect(Collectors.toList());
@@ -33,7 +32,7 @@ public class AdminService {
     // 2. 회원 승인하기
     @Transactional
     public void approveUser(String userID) {
-        User user = findUserByUserID(userID); // 헬퍼 메서드 호출
+        User user = findUserByUserID(userID);
         user.setStatus(UserStatus.ACTIVE);
     }
 
@@ -48,13 +47,10 @@ public class AdminService {
     @Transactional
     public void updateUserRole(String userID, String newRoleStr) {
         User user = findUserByUserID(userID);
-
         try {
-            // 문자열을 Enum으로 변환
             UserRole newRole = UserRole.valueOf(newRoleStr.toUpperCase());
             user.setRole(newRole);
         } catch (IllegalArgumentException e) {
-            // 잘못된 권한 문자열이 들어오면 400 Bad Request (GlobalExceptionHandler가 처리)
             throw new IllegalArgumentException("존재하지 않는 권한입니다: " + newRoleStr);
         }
     }
@@ -66,13 +62,18 @@ public class AdminService {
                 .map(UserInfoDto::from)
                 .collect(Collectors.toList());
     }
-    // 6. 강제 탈퇴 로직
+
+    // 6. 강제 탈퇴 로직 (수정됨)
     @Transactional
     public void forceWithdrawal(String userId) {
-        // 1. 유저 찾기 (userId는 학번/로그인ID)
+        // 1. 유저 찾기
         User user = findUserByUserID(userId);
-        // 2. 삭제 (DB에서 완전히 제거)
-        userLoginInfoRepository.delete(user);
+
+        // 2. [변경] 삭제 대신 상태를 '탈퇴'로 변경
+        user.setStatus(UserStatus.WITHDRAWN);
+
+        // 보안을 위해 비밀번호나 개인정보를 비워줄 수도 있음
+        // user.setUserPassword("");
     }
 
     private User findUserByUserID(String userID) {

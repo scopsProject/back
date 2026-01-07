@@ -15,7 +15,7 @@ public class SongSession {
     private String sessionType;   // 예: V, G, D
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id") // ✅ User 테이블의 ID를 저장 (외래키)
+    @JoinColumn(name = "user_id")
     private User player;
 
     @ManyToOne(fetch = FetchType.LAZY)
