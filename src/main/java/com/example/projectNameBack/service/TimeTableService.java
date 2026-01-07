@@ -26,7 +26,10 @@ public class TimeTableService {
     public TimeTable addTimeTable(String userId, TimeTableDto dto) {
         User user = findUserByUserID(userId);
 
-        // 시간표 겹침 검증 (예외 발생 시 GlobalHandler가 처리)
+        // 시간 선후 관계 검증
+        validateTimeOrder(dto);
+
+        // 시간표 겹침 검증
         validateOverlap(user.getId(), dto);
 
         TimeTable timeTable = dto.toEntity(user);
@@ -45,6 +48,9 @@ public class TimeTableService {
     @Transactional
     public void updateTimeTable(Long id, String userId, TimeTableDto dto) {
         TimeTable timeTable = findTimeTableWithOwnership(id, userId);
+
+        // 시간 선후 관계 검증
+        validateTimeOrder(dto);
 
         // 수정 시 겹침 확인 (자기 자신 제외)
         boolean isOverlapped = timeTableRepository.existsOverlapForUpdate(
@@ -105,6 +111,14 @@ public class TimeTableService {
         if (isOverlapped) {
             // [요청 사항] 겹침 에러 메시지
             throw new IllegalStateException("이미 해당 시간대에 시간표가 존재합니다.");
+        }
+    }
+    // 시간 검증 헬퍼 메서드
+    private void validateTimeOrder(TimeTableDto dto) {
+        // LocalTime은 compareTo나 isAfter 등으로 비교 가능
+        // dto.getStartTime()이 09:00:00 형태의 LocalTime이라고 가정
+        if (!dto.getStartTime().isBefore(dto.getEndTime())) {
+            throw new IllegalArgumentException("종료 시간은 시작 시간보다 늦어야 합니다.");
         }
     }
 }
