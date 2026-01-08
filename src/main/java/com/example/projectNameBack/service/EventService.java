@@ -78,9 +78,12 @@ public class EventService {
         Event event = eventRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("행사를 찾을 수 없습니다. ID: " + id));
 
-        // 수정 (더티 체킹)
-        event.updateEvent(dto.getEventName(), dto.getStartDate(), dto.getEndDate());
-        // 필요 시 event.setSongRegistrationAvailable(dto.isAvailable());
+        event.updateEvent(
+                dto.getEventName(),
+                dto.getStartDate(),
+                dto.getEndDate(),
+                dto.isSongRegistrationAvailable() // DTO에서 값 가져오기
+        );
 
         log.info("행사 수정 완료: ID={}, 이름={}", id, dto.getEventName());
         return EventDto.fromEntity(event);

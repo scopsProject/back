@@ -38,6 +38,7 @@ public class AdminController {
         adminService.rejectUser(userID);
         return ResponseEntity.ok("거절(삭제) 완료: " + userID);
     }
+    // 4. 활성화 유저 조회
     @GetMapping("/active-users")
     public ResponseEntity<List<UserInfoDto>> getActiveUsers(
             @AuthenticationPrincipal UserDetails userDetails // 1. 내 정보(관리자 ID) 가져오기

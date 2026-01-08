@@ -35,10 +35,10 @@ public class Event{
     @JsonIgnore
     private List<Reservation> reservations = new ArrayList<>();
 
-    public void updateEvent(String eventName, LocalDate startDate, LocalDate endDate) {
+    public void updateEvent(String eventName, LocalDate startDate, LocalDate endDate, boolean isSongRegistrationAvailable) {
         this.eventName = eventName;
         this.startDate = startDate;
         this.endDate = endDate;
-        // isSongRegistrationAvailable 수정도 여기서 처리
+        this.isSongRegistrationAvailable = isSongRegistrationAvailable;
     }
 }
