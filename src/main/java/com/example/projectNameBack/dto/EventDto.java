@@ -19,7 +19,7 @@ public class EventDto {
     private LocalDate startDate;
     private LocalDate endDate;
     @JsonProperty("isSongRegistrationAvailable")
-    private boolean isSongRegistrationAvailable;
+    private Boolean songRegistrationAvailable;
 
     public static EventDto fromEntity(Event event) {
         return EventDto.builder()
@@ -27,7 +27,7 @@ public class EventDto {
                 .eventName(event.getEventName())
                 .startDate(event.getStartDate())
                 .endDate(event.getEndDate())
-                .isSongRegistrationAvailable(event.isSongRegistrationAvailable())
+                .songRegistrationAvailable(event.isSongRegistrationAvailable())
                 .build();
     }
 }

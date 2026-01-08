@@ -78,11 +78,15 @@ public class EventService {
         Event event = eventRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("행사를 찾을 수 없습니다. ID: " + id));
 
+        boolean isAvailable = dto.getSongRegistrationAvailable() != null
+                ? dto.getSongRegistrationAvailable()
+                : false;
+
         event.updateEvent(
                 dto.getEventName(),
                 dto.getStartDate(),
                 dto.getEndDate(),
-                dto.isSongRegistrationAvailable() // DTO에서 값 가져오기
+                isAvailable
         );
 
         log.info("행사 수정 완료: ID={}, 이름={}", id, dto.getEventName());

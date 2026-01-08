@@ -13,14 +13,16 @@ public class EventRequestDto {
     private LocalDate startDate; // 행사 시작일 (또는 생성일)
     private LocalDate endDate;     // 행사 종료일
     @JsonProperty("isSongRegistrationAvailable")
-    private boolean isSongRegistrationAvailable;
+    private Boolean songRegistrationAvailable;
 
     public Event toEntity() {
         Event event = new Event();
         event.setEventName(this.eventName);
         event.setStartDate(this.startDate);
         event.setEndDate(this.endDate);
-        event.setSongRegistrationAvailable(this.isSongRegistrationAvailable);
+        event.setSongRegistrationAvailable(
+                this.songRegistrationAvailable != null ? this.songRegistrationAvailable : false
+        );
         return event;
     }
 }
