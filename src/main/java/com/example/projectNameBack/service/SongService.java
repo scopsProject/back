@@ -9,8 +9,10 @@ import com.example.projectNameBack.entity.User;
 import com.example.projectNameBack.repository.EventRepository;
 import com.example.projectNameBack.repository.SongRegisterRepository;
 import com.example.projectNameBack.repository.UserLoginInfoRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -73,12 +75,29 @@ public class SongService {
 
     // 5. 곡 삭제
     @Transactional
-    public void deleteSong(Long id) {
+    public void deleteSong(Long id, String currentUserId) {
+        // 1. 삭제할 곡 정보 조회
         SongRegister songRegister = songRegisterRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 곡 신청을 찾을 수 없습니다. id=" + id));
+                .orElseThrow(() -> new EntityNotFoundException("곡 정보를 찾을 수 없습니다."));
 
+        // 2. 현재 로그인한 사용자의 정보를 ID(학번)로 조회하여 '실명'을 가져옴
+        User currentUser = userLoginInfoRepository.findByUserID(currentUserId)
+                .orElseThrow(() -> new EntityNotFoundException("사용자 정보를 찾을 수 없습니다."));
+
+        String currentUserName = currentUser.getUserName();
+
+        // 3. 곡에 저장된 등록자 이름 가져오기
+        String savedOwnerName = songRegister.getUserName();
+
+        // 4. 이름 비교 검증
+        if (!savedOwnerName.equals(currentUserName)) {
+            throw new AccessDeniedException("본인이 등록한 곡만 삭제할 수 있습니다.");
+        }
+
+        // 5. 삭제 진행
         songRegisterRepository.delete(songRegister);
-        log.info("곡 삭제 완료: ID={}", id);
+
+        log.info("곡 삭제 완료 - 곡ID: {}, 요청자명: {}", id, currentUserName);
     }
 
     // 데이터 업데이트 공통 로직
