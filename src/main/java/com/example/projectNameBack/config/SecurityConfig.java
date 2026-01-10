@@ -66,7 +66,9 @@ public class SecurityConfig {
                 "https://front-a3c.pages.dev",
                 "https://*.front-a3c.pages.dev",
                 "http://localhost:3000",
-                "https://scopsband.mooo.com" // ⬅️ Nginx https 주소
+                "https://scopsband.mooo.com", //  Nginx https 주소
+                "https://www.scops1989.com",
+                "https://scops1989.com"
         ));
 
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
