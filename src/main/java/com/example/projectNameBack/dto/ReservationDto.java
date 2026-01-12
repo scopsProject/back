@@ -1,6 +1,7 @@
 package com.example.projectNameBack.dto;
 //asdasdasd
 import com.example.projectNameBack.entity.Reservation;
+import com.example.projectNameBack.entity.ReservationType;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -17,6 +18,7 @@ public class ReservationDto {
     private LocalDate date;
     private LocalTime startTime;
     private LocalTime endTime;
+    private ReservationType type;
     private Long id;
     private String eventName;
     private String songName;
@@ -27,6 +29,7 @@ public class ReservationDto {
     public static ReservationDto fromEntity(Reservation entity) {
         return ReservationDto.builder()
                 .id(entity.getId())
+                .type(entity.getType())
                 .date(entity.getDate())
                 .startTime(entity.getStartTime())
                 .endTime(entity.getEndTime())

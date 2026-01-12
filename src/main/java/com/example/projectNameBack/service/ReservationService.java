@@ -2,10 +2,7 @@ package com.example.projectNameBack.service;
 
 import com.example.projectNameBack.dto.ReservationDto;
 import com.example.projectNameBack.dto.ReservationRequestDto;
-import com.example.projectNameBack.entity.Event;
-import com.example.projectNameBack.entity.Reservation;
-import com.example.projectNameBack.entity.SongRegister;
-import com.example.projectNameBack.entity.User;
+import com.example.projectNameBack.entity.*;
 import com.example.projectNameBack.repository.EventRepository;
 import com.example.projectNameBack.repository.ReservationRepository;
 import com.example.projectNameBack.repository.SongRegisterRepository;
@@ -55,39 +52,57 @@ public class ReservationService {
     // 3. 예약하기
     @Transactional
     public void reserveSong(ReservationRequestDto dto) {
-        // A. 시간 검증 (실패 시 IllegalStateException 발생 -> 핸들러가 409 처리)
+        // A. 시간 검증
         validateReservationTime();
 
-        // B. 중복 검증 (실패 시 IllegalStateException 발생 -> 핸들러가 409 처리)
+        // B. 중복 검증
         if (!reservationRepository.findOverlappingReservations(dto.getDate(), dto.getStartTime(), dto.getEndTime()).isEmpty()) {
             throw new IllegalStateException("이미 예약된 시간대입니다.");
         }
 
-        // C. 엔티티 조회 (실패 시 IllegalArgumentException 발생 -> 핸들러가 400 처리)
-        Event event = eventRepository.findByEventName(dto.getEventName())
-                .orElseThrow(() -> new IllegalArgumentException("행사를 찾을 수 없습니다: " + dto.getEventName()));
-
         User user = userRepository.findByUserName(dto.getUserName())
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다: " + dto.getUserName()));
 
-        // D. 예약 생성
+        // D. 예약 객체 생성
         Reservation reservation = new Reservation();
-        reservation.setEvent(event);
         reservation.setUser(user);
-        reservation.setSingerName(dto.getSingerName());
-        reservation.setSongName(dto.getSongName());
         reservation.setDate(dto.getDate());
         reservation.setStartTime(dto.getStartTime().withSecond(0).withNano(0));
         reservation.setEndTime(dto.getEndTime().withSecond(0).withNano(0));
 
-        if (dto.getSongRegisterId() != null) {
-            SongRegister songRegister = songRepository.findById(dto.getSongRegisterId())
-                    .orElseThrow(() -> new IllegalArgumentException("곡 정보를 찾을 수 없습니다."));
-            reservation.setSongRegister(songRegister);
+        // 예약 타입 저장
+        reservation.setType(dto.getType());
+
+        // Enum 타입을 기준으로 분기 처리
+        if (dto.getType() == ReservationType.PERSONAL) {
+            // Case 1: 개인 연습
+            reservation.setEvent(null);
+            reservation.setSongRegister(null);
+
+            reservation.setSongName(dto.getSongName()); // "OOO 개인연습"
+            reservation.setSingerName("");
+
+        } else {
+            // Case 2: 밴드 합주 (ReservationType.BAND)
+            Event event = eventRepository.findByEventName(dto.getEventName())
+                    .orElseThrow(() -> new IllegalArgumentException("행사를 찾을 수 없습니다: " + dto.getEventName()));
+            reservation.setEvent(event);
+
+            reservation.setSongName(dto.getSongName());
+            reservation.setSingerName(dto.getSingerName());
+
+            // 합주인데 곡 ID가 없으면 에러
+            if (dto.getSongRegisterId() != null) {
+                SongRegister songRegister = songRepository.findById(dto.getSongRegisterId())
+                        .orElseThrow(() -> new IllegalArgumentException("곡 정보를 찾을 수 없습니다."));
+                reservation.setSongRegister(songRegister);
+            } else {
+                throw new IllegalArgumentException("합주 예약은 등록된 곡 정보가 필요합니다.");
+            }
         }
 
         reservationRepository.save(reservation);
-        log.info("예약 성공: {} - {}", user.getUserName(), dto.getSongName());
+        log.info("예약 성공 (타입: {}): {} - {}", dto.getType(), user.getUserName(), dto.getSongName());
 
         // E. 알림 전송
         sseService.broadcast(dto);

@@ -1,5 +1,6 @@
 package com.example.projectNameBack.dto;
 
+import com.example.projectNameBack.entity.ReservationType;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,6 +16,7 @@ public class ReservationRequestDto {
     private String userName;
     private String singerName;  // 프론트에 맞춤
     private String songName;
+    private ReservationType type;
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate date;
 

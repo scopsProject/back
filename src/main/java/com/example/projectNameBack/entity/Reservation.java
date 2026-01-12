@@ -22,7 +22,7 @@ public class Reservation {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "event_id")
+    @JoinColumn(name = "event_id", nullable = true)
     private Event event;
     private String singerName;
     private String songName;
@@ -38,8 +38,12 @@ public class Reservation {
 
     // SongRegister (필수 아니면 optional)
     @ManyToOne
-    @JoinColumn(name = "song_register_id")
+    @JoinColumn(name = "song_register_id", nullable = true)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private SongRegister songRegister;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private ReservationType type;
 }
 
