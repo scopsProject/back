@@ -1,5 +1,6 @@
 package com.example.projectNameBack.service;
 
+import com.example.projectNameBack.dto.ReservationDto;
 import com.example.projectNameBack.dto.ReservationRequestDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -47,7 +48,7 @@ public class SseService {
         return emitter;
     }
 
-    public void broadcast(ReservationRequestDto dto) {
+    public void broadcast(ReservationDto dto) {
         for (SseEmitter emitter : emitters) {
             try {
                 emitter.send(SseEmitter.event().name("new-reservation").data(dto));

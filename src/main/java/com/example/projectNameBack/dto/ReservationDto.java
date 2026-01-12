@@ -35,7 +35,7 @@ public class ReservationDto {
                 .endTime(entity.getEndTime())
                 .songName(entity.getSongName())
                 .singerName(entity.getSingerName())
-                .eventName(entity.getEvent() != null ? entity.getEvent().getEventName() : null)
+                .eventName(entity.getEvent() != null ? entity.getEvent().getEventName() : "개인연습")
                 .userName(entity.getUser().getUserName())
                 .sessions(entity.getSongRegister() != null ?
                         entity.getSongRegister().getSessions().stream()

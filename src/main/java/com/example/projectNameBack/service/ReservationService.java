@@ -105,7 +105,8 @@ public class ReservationService {
         log.info("예약 성공 (타입: {}): {} - {}", dto.getType(), user.getUserName(), dto.getSongName());
 
         // E. 알림 전송
-        sseService.broadcast(dto);
+        ReservationDto responseDto = ReservationDto.fromEntity(reservation);
+        sseService.broadcast(responseDto);
     }
 
     // 4. 예약 시간 검증
