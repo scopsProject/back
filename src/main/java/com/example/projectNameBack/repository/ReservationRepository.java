@@ -16,13 +16,11 @@ import java.util.List;
 
 @Repository
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
-    @Query("SELECT r FROM Reservation r " +
-            "JOIN FETCH r.songRegister sr " +
-            "JOIN FETCH sr.sessions " +
+    @Query("SELECT DISTINCT r FROM Reservation r " +
+            "LEFT JOIN FETCH r.songRegister sr " +
+            "LEFT JOIN FETCH sr.sessions " +
             "WHERE r.date BETWEEN :start AND :end")
-    List<Reservation> findWithSessionsByDateRange(
-            @Param("start") LocalDate start,
-            @Param("end") LocalDate end);
+    List<Reservation> findWithSessionsByDateRange(@Param("start") LocalDate start, @Param("end") LocalDate end);
     List<Reservation> findByDateBetween(LocalDate start, LocalDate end);
     boolean existsByDateAndStartTimeLessThanAndEndTimeGreaterThan(
             LocalDate date,
