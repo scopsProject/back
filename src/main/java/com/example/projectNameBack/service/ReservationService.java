@@ -141,5 +141,6 @@ public class ReservationService {
         reservationRepository.delete(reservation);
         // 필요한 최소한의 감사(Audit) 로그만 남깁니다.
         log.info("예약 삭제 완료 - 예약ID: {}, 요청자ID: {}", reservationId, currentUserId);
+        sseService.broadcastDelete(reservationId);
     }
 }

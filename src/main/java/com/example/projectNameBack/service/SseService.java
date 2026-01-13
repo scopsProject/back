@@ -57,4 +57,14 @@ public class SseService {
             }
         }
     }
+    public void broadcastDelete(Long reservationId) {
+        for (SseEmitter emitter : emitters) {
+            try {
+                // 이벤트 이름: "delete-reservation"
+                emitter.send(SseEmitter.event().name("delete-reservation").data(reservationId));
+            } catch (IOException e) {
+                emitters.remove(emitter);
+            }
+        }
+    }
 }
