@@ -49,13 +49,13 @@
 ## 주요기능
 
 - **연습실 예약 시스템**
-![스콥스웹앱프젝 PT(4)](https://github.com/user-attachments/assets/d0d50d6f-c6d4-493e-9b46-44c9ab039cc8)
+<img src="https://github.com/user-attachments/assets/d0d50d6f-c6d4-493e-9b46-44c9ab039cc8" alt="스콥스웹앱프젝 PT(4)" width="1449">
 
 - **부원 간 시간표 확인 및 동아리 캘린더**
-![스콥스웹앱프젝 PT(5)](https://github.com/user-attachments/assets/66c3f130-1e1e-4108-be58-dfb7185788f1)
+<img src="https://github.com/user-attachments/assets/66c3f130-1e1e-4108-be58-dfb7185788f1" alt="스콥스웹앱프젝 PT(5)" width="1449">
 
 - **관리자 시스템**
-![스콥스웹앱프젝 PT(6)](https://github.com/user-attachments/assets/701045ce-1886-45d1-b593-1908678ef1c5)
+<img src="https://github.com/user-attachments/assets/701045ce-1886-45d1-b593-1908678ef1c5" alt="스콥스웹앱프젝 PT(6)" width="1449">
 
 
 ## 기술 스택
