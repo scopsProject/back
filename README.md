@@ -1,7 +1,7 @@
 # SCOPS 동아리 운영관리 웹앱
 ![스콥스웹앱프젝 PT(1)](https://github.com/user-attachments/assets/cb1a4ca9-51e9-4d68-a99b-8f74aaeca4f6)
 
-##서비스 소개
+## 서비스 소개
 <div align="left">
 <img width="216" height="216" alt="Group 288" src="https://github.com/user-attachments/assets/e9c1e8e9-ddc4-4d7e-97f1-d0be58fed027"  width="300">
 
