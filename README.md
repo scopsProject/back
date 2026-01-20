@@ -3,7 +3,8 @@
 
 ##서비스 소개
 <div align="left">
-<img width="216" height="216" alt="Group 288" src="https://github.com/user-attachments/assets/e9c1e8e9-ddc4-4d7e-97f1-d0be58fed027"  width="300"/>
+<img width="216" height="216" alt="Group 288" src="https://github.com/user-attachments/assets/e9c1e8e9-ddc4-4d7e-97f1-d0be58fed027"  width="300">
+
 > 개발 기간: 2025. 9. 8 ~ 2025. 11. 30
 
 동아리 부원관리와 실시간 연습실 예약 시스템
