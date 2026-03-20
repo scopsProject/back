@@ -6,6 +6,7 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Entity
@@ -31,6 +32,9 @@ public class Reservation {
     private LocalTime startTime;
     private LocalTime endTime;
 
+    @Column(updatable = false)
+    private LocalDateTime createdAt;
+
     // 예약 사용자
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -45,5 +49,10 @@ public class Reservation {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ReservationType type;
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
 }
 
