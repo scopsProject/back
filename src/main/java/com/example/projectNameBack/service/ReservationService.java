@@ -12,11 +12,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import org.springframework.security.access.AccessDeniedException;
+
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.temporal.ChronoUnit; // 추가된 임포트
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -59,6 +61,9 @@ public class ReservationService {
         if (!reservationRepository.findOverlappingReservations(dto.getDate(), dto.getStartTime(), dto.getEndTime()).isEmpty()) {
             throw new IllegalStateException("이미 예약된 시간대입니다.");
         }
+
+        // C. 하루 총 예약 시간 검증 (최대 6시간) 추가
+        checkDailyTimeLimit(dto.getDate(), dto.getStartTime(), dto.getEndTime());
 
         User user = userRepository.findByUserName(dto.getUserName())
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다: " + dto.getUserName()));
@@ -109,6 +114,27 @@ public class ReservationService {
         sseService.broadcast(responseDto);
     }
 
+    // [신규] 하루 예약 제한 시간 검증 로직
+    private void checkDailyTimeLimit(LocalDate date, LocalTime startTime, LocalTime endTime) {
+        // 1. 해당 날짜에 잡혀있는 모든 예약을 가져옵니다.
+        List<Reservation> dailyReservations = reservationRepository.findWithSessionsByDateRange(date, date);
+
+        // 2. 기존 예약들의 총 소요 시간을 분(minute) 단위로 합산합니다.
+        long totalExistingMinutes = 0;
+        for (Reservation res : dailyReservations) {
+            totalExistingMinutes += ChronoUnit.MINUTES.between(res.getStartTime(), res.getEndTime());
+        }
+
+        // 3. 이번에 새로 들어온 예약의 소요 시간을 계산합니다.
+        long newReservationMinutes = ChronoUnit.MINUTES.between(startTime, endTime);
+
+        // 4. 총합이 6시간(360분)을 초과하는지 검사합니다.
+        long MAX_MINUTES_PER_DAY = 6 * 60; // 360분
+        if (totalExistingMinutes + newReservationMinutes > MAX_MINUTES_PER_DAY) {
+            throw new IllegalStateException("하루 최대 예약시간을 초과했습니다.");
+        }
+    }
+
     // 4. 예약 시간 검증
     private void validateReservationTime() {
         LocalDateTime now = LocalDateTime.now();
@@ -124,6 +150,7 @@ public class ReservationService {
             throw new IllegalStateException("예약 가능한 시간이 아닙니다. (화 09:00 ~ 목 19:00)");
         }
     }
+
     // 5. 예약 취소 (삭제)
     @Transactional
     public void cancelReservation(Long reservationId, String currentUserId) {
