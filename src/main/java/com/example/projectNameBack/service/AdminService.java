@@ -77,19 +77,17 @@ public class AdminService {
                 .collect(Collectors.toList());
     }
 
-    // 6. 강제 탈퇴 로직 (수정됨)
+    // 6. 강제 탈퇴 로직 (DB에서 완전 삭제)
     @Transactional
     public void forceWithdrawal(String userId) {
         // 1. 유저 찾기
         User user = findUserByUserID(userId);
+        String userName = user.getUserName(); // 삭제 후 로그에 남기기 위해 이름 미리 저장
 
-        // 2. 삭제 대신 상태를 '탈퇴'로 변경
-        user.setStatus(UserStatus.WITHDRAWN);
+        // 2. DB에서 완전히 삭제 (이래야 학번 중복 없이 재가입 가능)
+        userLoginInfoRepository.delete(user);
 
-        log.info("관리자 강제 탈퇴 처리 - 대상: {} ({})", user.getUserName(), userId);
-
-        // 보안을 위해 비밀번호나 개인정보를 비워줄 수도 있음
-        // user.setUserPassword("");
+        log.info("관리자 강제 탈퇴(DB 삭제) 처리 완료 - 대상: {} ({})", userName, userId);
     }
 
     private User findUserByUserID(String userID) {
